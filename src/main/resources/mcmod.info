@@ -1,0 +1,16 @@
+[
+{
+  "modid": "csp",
+  "name": "CSP - Custom Solar Panels",
+  "description": "This mod adds customizable solar panels",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://scarex.fr",
+  "updateUrl": "",
+  "authorList": ["SCAREX"],
+  "credits": "Utybo for the idea",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

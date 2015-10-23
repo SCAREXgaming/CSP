@@ -1,0 +1,187 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+
+version = mod_version
+group= "fr.scarex"
+archivesBaseName = "CSP"
+
+minecraft {
+    version = "${mc_version}-${forge_version}"
+    runDir = "eclipse"
+    
+    replace "@VERSION@", project.version
+    replaceIn "CSP.java"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+
+// Dependencies
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'CB Repo'
+        url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name 'ProfMobius Repo'
+        url "http://mobiusstrip.eu/maven/"
+    }
+    maven {
+        name 'Player'
+        url "http://maven.ic2.player.to/"
+    }
+    maven {
+        name 'RX14'
+        url "http://mvn.rx14.co.uk/repo/"
+    }
+    maven {
+        name = "Tterrag"
+        url = "http://maven.tterrag.com/"
+    }
+    ivy {
+        name "CoFHCore"
+        artifactPattern 'http://addons-origin.cursecdn.com/files/2246/919/[module]-[revision].[ext]'
+    }
+    ivy {
+        name "ThermalFoundation"
+        artifactPattern 'http://addons-origin.cursecdn.com/files/2246/921/[module]-[revision].[ext]'
+    }
+    ivy {
+        name "ThermalFoundation"
+        artifactPattern 'http://addons-origin.cursecdn.com/files/2246/924/[module]-[revision].[ext]'
+    }
+    ivy {
+        name "ThermalDynamics"
+        artifactPattern 'http://addons-origin.cursecdn.com/files/2246/949/[module]-[revision].[ext]'
+    }
+    ivy {
+        name "MineFactoryReloaded"
+        artifactPattern 'http://addons-origin.cursecdn.com/files/2233/906/[module]-[revision].[ext]'
+    }
+    ivy {
+        name "BuildCraft"
+        artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
+    }
+}
+
+dependencies {
+    compile "codechicken:CodeChickenCore:${mc_version}-${ccc_version}:dev"
+    compile "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:dev"
+    compile "codechicken:ForgeMultipart:${mc_version}-${fmp_version}:dev"
+    compile "codechicken:NotEnoughItems:${mc_version}-${nei_version}:dev"
+    compile "mcp.mobius.waila:Waila:${waila_version}_${mc_version}"
+    compile "cofh:CoFHCore:[${mc_version}]${cofhcore_version}"
+    compile "cofh:ThermalFoundation:[${mc_version}]${tf_version}"
+    compile "cofh:ThermalExpansion:[${mc_version}]${te_version}"
+    compile "cofh:ThermalDynamics:[${mc_version}]${td_version}"
+    compile "cofh:MineFactoryReloaded:[${mc_version}]${mfr_version}"
+    compile "net.industrial-craft:industrialcraft-2:${ic2_version}-experimental:dev"
+    compile "buildcraft:buildcraft:${bc_version}:dev"
+    compile "com.enderio:EnderIO:${mc_version}-${enderio_version}:dev"
+    compile "inventorytweaks:InventoryTweaks:${invtweaks_version}"
+}
+
+
+// Artifacts
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'src'
+}
+
+artifacts {
+    archives deobfJar
+    archives sourceJar
+    archives jar
+}
+
+tasks.assemble.dependsOn('deobfJar', 'sourceJar')
+
+
+// Config
+
+ext.privateConfigFile = file 'private.properties'
+
+privateConfigFile.withReader {
+    def p = new Properties()
+    p.load(it)
+    project.ext.privateConfig = new ConfigSlurper().parse p
+}
+
+
+// Upload
+
+configurations {
+    ftpAntTask
+}
+
+dependencies {
+    ftpAntTask("org.apache.ant:ant-commons-net:1.8.2") {
+        module("commons-net:commons-net:1.4.1") {
+            dependencies "oro:oro:2.0.8:jar"
+        }
+    }
+}
+
+void ftp(Map args, Closure antFileset = {}) {
+    ant {
+        taskdef(name: 'ftp',
+                classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+                classpath: configurations.ftpAntTask.asPath)
+        Map ftpArgs = args + [
+                               verbose : 'yes',
+                               server  : "${privateConfig.ftp_adress}",
+                               remotedir : "repo/fr/scarex/${archivesBaseName}/${version}",
+                               userid  : "${privateConfig.ftp_user}",
+                               password: "${privateConfig.ftp_pw}"
+        ]
+        delegate.ftp(ftpArgs) {
+            antFileset.delegate = delegate
+            antFileset()
+        }
+    }
+}
+
+task upload() {
+    ftp(action: 'mkdir')
+    ftp(action: 'send') {
+        fileset(dir: "$buildDir/libs") {
+            include(name: "${archivesBaseName}-${version}*.jar")
+        }
+    }
+}
