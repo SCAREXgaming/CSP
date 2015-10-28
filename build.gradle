@@ -122,7 +122,7 @@ task deobfJar(type: Jar) {
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'src'
+    classifier = 'sources'
 }
 
 artifacts {
@@ -152,7 +152,7 @@ configurations {
 }
 
 dependencies {
-    ftpAntTask("org.apache.ant:ant-commons-net:1.8.2") {
+    ftpAntTask("org.apache.ant:ant-commons-net:1.9.4") {
         module("commons-net:commons-net:1.4.1") {
             dependencies "oro:oro:2.0.8:jar"
         }
@@ -166,10 +166,9 @@ void ftp(Map args, Closure antFileset = {}) {
                 classpath: configurations.ftpAntTask.asPath)
         Map ftpArgs = args + [
                                verbose : 'yes',
-                               server  : "${privateConfig.ftp_adress}",
-                               remotedir : "repo/fr/scarex/${archivesBaseName}/${version}",
-                               userid  : "${privateConfig.ftp_user}",
-                               password: "${privateConfig.ftp_pw}"
+                               server  : privateConfig.ftp_adress,
+                               userid  : privateConfig.ftp_user,
+                               password: privateConfig.ftp_pw
         ]
         delegate.ftp(ftpArgs) {
             antFileset.delegate = delegate
@@ -178,11 +177,40 @@ void ftp(Map args, Closure antFileset = {}) {
     }
 }
 
-task upload() {
-    ftp(action: 'mkdir')
-    ftp(action: 'send') {
+task upload() << {
+    ftp(action: 'mkdir', remotedir: "repo/fr/scarex/${archivesBaseName}/${version}")
+    ftp(action: 'send', remotedir: "repo/fr/scarex/${archivesBaseName}/${version}") {
         fileset(dir: "$buildDir/libs") {
             include(name: "${archivesBaseName}-${version}*.jar")
+        }
+    }
+}
+
+task mavenUpload(dependsOn: 'publish') << {
+    ftp(action: 'mkdir', remotedir: "repo")
+    ftp(action: 'send', remotedir: "repo") {
+        fileset(dir: "$buildDir/repo")
+    }
+}
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        universal(MavenPublication) {
+            artifact jar
+        }
+        dev(MavenPublication) {
+            artifact deobfJar
+        }
+        sources(MavenPublication) {
+            artifact sourceJar
+        }
+    }
+    
+    repositories {
+        maven {
+            url "$buildDir/repo"
         }
     }
 }
