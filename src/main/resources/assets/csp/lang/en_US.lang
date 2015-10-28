@@ -1,0 +1,12 @@
+# Blocks
+tile.csp_SolarPanelFrame.name=Solar panel frame
+
+# Items
+item.csp_SolarCellBasic.name=Solar cell (Basic)
+item.csp_SolarCellHardened.name=Solar cell (Hardened)
+item.csp_SolarCellReinforced.name=Solar cell (Reinforced)
+item.csp_SolarCellResonant.name=Solar cell (Resonant)
+item.csp_SolarCellFrame.name=Solar cell frame
+
+#Creative tabs
+itemGroup.csp=Custom Solar Panels

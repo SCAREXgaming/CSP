@@ -5,19 +5,20 @@ import java.util.Map.Entry;
 
 public class CSPBlocks
 {
-    public static HashMap<String, AbstractBlock> blockMap = new HashMap<String, AbstractBlock>();
-    
+    public static HashMap<Class, AbstractBlock> blockMap = new HashMap<Class, AbstractBlock>();
+
     public static void preInit() {
-        addBlock(new SolarPanel());
+        addBlock(new SolarPanelFrame());
     }
-    
+
     public static void init() {
-        for (Entry<String, AbstractBlock> e : blockMap.entrySet()) {
+        for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
             e.getValue().register();
+            e.getValue().init();
         }
     }
-    
+
     private static void addBlock(AbstractBlock b) {
-        CSPBlocks.blockMap.put(b.getName(), b);
+        CSPBlocks.blockMap.put(b.getClass(), b);
     }
 }

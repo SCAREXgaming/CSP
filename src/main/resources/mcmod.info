@@ -1,7 +1,7 @@
 [
 {
   "modid": "csp",
-  "name": "CSP - Custom Solar Panels",
+  "name": "Custom Solar Panels",
   "description": "This mod adds customizable solar panels",
   "version": "${version}",
   "mcversion": "${mcversion}",

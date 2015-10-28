@@ -1,7 +1,9 @@
 package fr.scarex.csp.block;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import fr.scarex.csp.CSP;
 import fr.scarex.csp.IRegister;
+import fr.scarex.csp.client.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
@@ -21,10 +23,21 @@ public abstract class AbstractBlock extends Block implements IRegister
 
     @Override
     public String getUnlocalizedName() {
-        return "tile." + this.getName();
+        return "tile." + CSP.MODID + "_" + this.getName();
     }
-    
+
     public Class getTileEntityClass() {
         return null;
+    }
+
+    @Override
+    public void init() {
+        this.setBlockName(this.getName());
+        this.setCreativeTab(CSP.CREATIVE_TAB);
+    }
+
+    @Override
+    public int getRenderType() {
+        return ClientProxy.renderId;
     }
 }

@@ -26,6 +26,7 @@ minecraft {
     runDir = "eclipse"
     
     replace "@VERSION@", project.version
+    replace "@DEBUG@", true
     replaceIn "CSP.java"
 }
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cofh.api.energy.IEnergyHandler;
-import fr.scarex.csp.CSP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
