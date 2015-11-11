@@ -2,13 +2,16 @@ package fr.scarex.csp.tileentity;
 
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyHandler;
-import fr.scarex.csp.util.EnergyUtils;
+import fr.scarex.csp.util.BlockCoord;
+import fr.scarex.csp.util.energy.PowerDistributor;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class AbstractTileEntityEnergy extends TileEntity implements IEnergyHandler
 {
+    protected PowerDistributor powerDistributor;
     protected final EnergyStorage storage;
 
     public AbstractTileEntityEnergy(int capacity, int input, int output) {
@@ -41,7 +44,11 @@ public class AbstractTileEntityEnergy extends TileEntity implements IEnergyHandl
     }
 
     public void transmit() {
-        EnergyUtils.transmit(this);
+        if (this.powerDistributor == null) this.powerDistributor = new PowerDistributor(new BlockCoord(this));
+        int canTransmit = Math.min(this.storage.getEnergyStored(), this.storage.getMaxExtract());
+        if (canTransmit <= 0) return;
+        int transmitted = this.powerDistributor.transmitEnergy(this.worldObj, canTransmit);
+        this.storage.setEnergyStored(this.storage.getEnergyStored() - transmitted);
     }
 
     @Override
@@ -64,5 +71,9 @@ public class AbstractTileEntityEnergy extends TileEntity implements IEnergyHandl
 
     public void readExtraCompound(NBTTagCompound comp) {
         this.storage.readFromNBT(comp);
+    }
+
+    public void onNeighborBlockChange(Block block) {
+        if (this.powerDistributor != null) this.powerDistributor.neighboursChanged();
     }
 }

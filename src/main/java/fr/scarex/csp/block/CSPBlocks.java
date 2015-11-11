@@ -9,11 +9,14 @@ public class CSPBlocks
 
     public static void preInit() {
         addBlock(new SolarPanelFrame());
+        
+        for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
+            e.getValue().register();
+        }
     }
 
     public static void init() {
         for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
-            e.getValue().register();
             e.getValue().init();
         }
     }

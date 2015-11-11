@@ -1,5 +1,6 @@
 # Blocks
 tile.csp_SolarPanelFrame.name=Solar panel frame
+tile.csp_SolarPanelFrame.currentlyProducing=Currently producing : %d
 
 # Items
 item.csp_SolarCellBasic.name=Solar cell (Basic)
@@ -7,6 +8,7 @@ item.csp_SolarCellHardened.name=Solar cell (Hardened)
 item.csp_SolarCellReinforced.name=Solar cell (Reinforced)
 item.csp_SolarCellResonant.name=Solar cell (Resonant)
 item.csp_SolarCellFrame.name=Solar cell frame
+item.csp_SolarCell.maxProduction=Max production : %s
 
 #Creative tabs
 itemGroup.csp=Custom Solar Panels

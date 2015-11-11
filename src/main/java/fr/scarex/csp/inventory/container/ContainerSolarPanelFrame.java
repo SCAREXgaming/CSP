@@ -10,6 +10,7 @@ import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -17,6 +18,7 @@ public class ContainerSolarPanelFrame extends Container
 {
     public final TileEntitySolarPanel tileEntity;
     public final InventoryPlayer playerInv;
+    public final int[] stackProduced = new int[16];
 
     public ContainerSolarPanelFrame(TileEntitySolarPanel tileEntity, InventoryPlayer playerInv) {
         this.tileEntity = tileEntity;
@@ -119,5 +121,21 @@ public class ContainerSolarPanelFrame extends Container
             this.detectAndSendChanges();
         }
         return super.slotClick(index, buttonPressed, flag, player);
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        
+        for (int i = 0; i < this.crafters.size(); i++) {
+            for (byte j = 4; j < 20; j++) {
+                ((ICrafting) this.crafters.get(i)).sendProgressBarUpdate(this, j - 4, this.tileEntity.getAmountProducedBy(j - 4));
+            }
+        }
+    }
+
+    @Override
+    public void updateProgressBar(int slot, int amount) {
+        this.stackProduced[slot] = amount;
     }
 }

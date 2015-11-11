@@ -138,4 +138,13 @@ public abstract class AbstractEnergyBlock extends AbstractBlock implements IDism
     public boolean canDismantle(EntityPlayer arg0, World arg1, int arg2, int arg3, int arg4) {
         return true;
     }
+
+    @Override
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+        TileEntity ent = world.getTileEntity(x, y, z);
+        if (ent instanceof AbstractTileEntityEnergy) {
+            AbstractTileEntityEnergy te = (AbstractTileEntityEnergy) ent;
+            te.onNeighborBlockChange(block);
+        }
+    }
 }

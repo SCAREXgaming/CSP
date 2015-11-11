@@ -1,0 +1,15 @@
+[
+    {
+        "repo": "http://addons-origin.cursecdn.com/files/2246/919/",
+        "file": "CoFHCore-[1.7.10]3.0.3-303.jar",
+        "class": "cofh.CoFHCore"
+    },{
+        "repo": "http://addons-origin.cursecdn.com/files/2246/921/",
+        "file": "ThermalFoundation-[1.7.10]1.2.0-102.jar",
+        "class": "cofh.thermalfoundation.ThermalFoundation"
+    },{
+        "repo": "http://addons-origin.cursecdn.com/files/2246/924/",
+        "file": "ThermalExpansion-[1.7.10]4.0.3B1-218.jar",
+        "class": "cofh.thermalexpansion.ThermalExpansion"
+    }
+]

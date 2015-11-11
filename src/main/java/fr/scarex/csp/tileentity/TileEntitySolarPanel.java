@@ -1,6 +1,7 @@
 package fr.scarex.csp.tileentity;
 
 import cofh.api.energy.EnergyStorage;
+import fr.scarex.csp.CSP;
 import fr.scarex.csp.item.ISolarCell;
 import fr.scarex.csp.item.ISolarUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,6 +24,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     public final ItemStack[] content = new ItemStack[24];
     public String customName;
     public int numPlayersUsing = 0;
+    public final int[] stackProducing = new int[16];
 
     public TileEntitySolarPanel() {
         super(CAPACITY, 0, OUTPUT);
@@ -35,8 +37,8 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     @Override
     public void updateEntity() {
-        if (this.canGenerate()) {
-            int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord, this.zCoord) - this.worldObj.skylightSubtracted;
+        if (!this.worldObj.isRemote && this.canGenerate()) {
+            int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord + 1, this.zCoord) - this.worldObj.skylightSubtracted;
             float f = this.worldObj.getCelestialAngleRadians(1.0F);
 
             float ratio = Math.max(0, Math.round((float) i1 * MathHelper.cos(f)));
@@ -47,6 +49,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
                 for (byte j = 20; j < 24; j++) {
                     if (this.getStackInSlot(j) != null) energy = ((ISolarUpgrade) this.getStackInSlot(j).getItem()).generateWithCell(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(j), this.getStackInSlot(i), f, i1, ratio, energy);
                 }
+                if (this.worldObj.getTotalWorldTime() % 20 == 0) this.stackProducing[i - 4] = energy;
                 total += energy;
             }
             for (int i = 20; i < 24; i++) {
@@ -224,5 +227,9 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         for (byte i = 20; i < 24; i++) {
             if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).updateUpgrade(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i));
         }
+    }
+
+    public int getAmountProducedBy(int index) {
+        return this.stackProducing[index];
     }
 }

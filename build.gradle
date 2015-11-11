@@ -78,7 +78,7 @@ repositories {
         artifactPattern 'http://addons-origin.cursecdn.com/files/2246/921/[module]-[revision].[ext]'
     }
     ivy {
-        name "ThermalFoundation"
+        name "ThermalExpansion"
         artifactPattern 'http://addons-origin.cursecdn.com/files/2246/924/[module]-[revision].[ext]'
     }
     ivy {
@@ -95,8 +95,13 @@ repositories {
     }
 }
 
+configurations {
+    api
+}
+
 dependencies {
     compile "codechicken:CodeChickenCore:${mc_version}-${ccc_version}:dev"
+    api "codechicken:CodeChickenCore:${mc_version}-${ccc_version}:src"
     compile "codechicken:CodeChickenLib:${mc_version}-${ccl_version}:dev"
     compile "codechicken:ForgeMultipart:${mc_version}-${fmp_version}:dev"
     compile "codechicken:NotEnoughItems:${mc_version}-${nei_version}:dev"
@@ -112,8 +117,44 @@ dependencies {
     compile "inventorytweaks:InventoryTweaks:${invtweaks_version}"
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs += "api"
+        }
+    }
+}
+
+task extractFiles(type: Copy) << {
+    delete "api"
+    from configurations.api.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }
+    into "api/tmp/"
+}
+
+task extractApi(type: Copy, dependsOn: extractFiles) {
+    configurations.api.each {
+        def name = it.name.substring(0, it.name.indexOf('-')) + "_api"
+        if (project.properties.containsKey(name)) {
+            from "api/tmp/" + project[name]
+            into "api/" + project[name]
+        }
+    }
+    doLast {
+        delete "api/tmp"
+    }
+}
+
 
 // Artifacts
+
+jar {
+    manifest {
+        attributes "FMLCorePluginContainsFMLMod": "true"
+        attributes "FMLCorePlugin": "codechicken.core.launch.DepLoader"
+    }
+}
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
