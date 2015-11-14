@@ -32,4 +32,7 @@ public abstract class AbstractItem extends Item implements IRegister
     protected String getIconString() {
         return CSP.MODID + ":" + this.getName();
     }
+
+    @Override
+    public void registerCrafts() {}
 }

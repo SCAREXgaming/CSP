@@ -1,11 +1,19 @@
 package fr.scarex.csp.block;
 
+import java.util.List;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class SolarPanelFrame extends AbstractEnergyBlock
 {
@@ -21,6 +29,11 @@ public class SolarPanelFrame extends AbstractEnergyBlock
     @Override
     public Class getTileEntityClass() {
         return TileEntitySolarPanel.class;
+    }
+
+    @Override
+    public void registerCrafts() {
+        GameRegistry.addRecipe(new ShapedOreRecipe(this, "XXX", " Y ", "YYY", 'X', "ingotSolar", 'Y', "ingotIron"));
     }
 
     @Override
@@ -47,5 +60,10 @@ public class SolarPanelFrame extends AbstractEnergyBlock
     @Override
     public boolean isOpaqueCube() {
         return false;
+    }
+
+    @Override
+    public boolean hasSpecialRender() {
+        return true;
     }
 }

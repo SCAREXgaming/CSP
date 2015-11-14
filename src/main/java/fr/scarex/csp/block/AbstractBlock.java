@@ -38,6 +38,18 @@ public abstract class AbstractBlock extends Block implements IRegister
 
     @Override
     public int getRenderType() {
-        return ClientProxy.renderId;
+        return this.hasSpecialRender() ? ClientProxy.renderId : super.getRenderType();
     }
+    
+    public boolean hasSpecialRender() {
+        return false;
+    }
+
+    @Override
+    protected String getTextureName() {
+        return this.hasSpecialRender() ? "" : CSP.MODID + ":" + this.getName();
+    }
+
+    @Override
+    public void registerCrafts() {}
 }

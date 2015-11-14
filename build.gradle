@@ -33,14 +33,19 @@ minecraft {
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
+    inputs.property "cofhcore_version", project.cofhcore_version
+    inputs.property "tf_version", project.tf_version
+    inputs.property "te_version", project.te_version
     
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
+        include 'dependancies.info'
         
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'cofhcore_version':project.cofhcore_version, 'tf_version':project.tf_version, 'te_version':project.te_version
     }
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+        exclude 'dependancies.info'
     }
 }
 

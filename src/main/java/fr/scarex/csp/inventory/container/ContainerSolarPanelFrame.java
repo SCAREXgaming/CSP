@@ -1,11 +1,11 @@
 package fr.scarex.csp.inventory.container;
 
 import fr.scarex.csp.inventory.slot.SlotSolarCell;
-import fr.scarex.csp.inventory.slot.SlotSolarCellFrame;
+import fr.scarex.csp.inventory.slot.SlotSolarCellSupport;
 import fr.scarex.csp.inventory.slot.SlotSolarUpgrade;
 import fr.scarex.csp.item.ISolarCell;
 import fr.scarex.csp.item.ISolarUpgrade;
-import fr.scarex.csp.item.SolarCellFrame;
+import fr.scarex.csp.item.SolarCellSupport;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -33,7 +33,7 @@ public class ContainerSolarPanelFrame extends Container
 
     private void bindCellSlots() {
         for (byte i = 0; i < 4; i++) {
-            this.addSlotToContainer(new SlotSolarCellFrame(this.tileEntity, i, 18, 16 + i * 26));
+            this.addSlotToContainer(new SlotSolarCellSupport(this.tileEntity, i, 18, 16 + i * 26));
         }
         for (byte i = 0; i < 4; i++) {
             for (byte j = 0; j < 4; j++) {
@@ -74,10 +74,10 @@ public class ContainerSolarPanelFrame extends Container
                 if (itemstack1.getItem() instanceof ISolarCell) {
                     boolean flag = true;
                     for (byte i = 0; i < 4 && flag; i++) {
-                        if (this.tileEntity.getStackInSlot(i) != null && this.tileEntity.getStackInSlot(i).getItem() instanceof SolarCellFrame && this.mergeItemStack(itemstack1, i * 4 + 4, i * 4 + 8, false)) flag = false;
+                        if (this.tileEntity.getStackInSlot(i) != null && this.tileEntity.getStackInSlot(i).getItem() instanceof SolarCellSupport && this.mergeItemStack(itemstack1, i * 4 + 4, i * 4 + 8, false)) flag = false;
                     }
                     if (flag) return null;
-                } else if (itemstack1.getItem() instanceof SolarCellFrame) {
+                } else if (itemstack1.getItem() instanceof SolarCellSupport) {
                     if (!this.mergeItemStack(itemstack1, 0, 4, false)) return null;
                 } else if (itemstack1.getItem() instanceof ISolarUpgrade) {
                     if (!this.mergeItemStack(itemstack1, 20, 24, false)) return null;
@@ -126,7 +126,7 @@ public class ContainerSolarPanelFrame extends Container
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        
+
         for (int i = 0; i < this.crafters.size(); i++) {
             for (byte j = 4; j < 20; j++) {
                 ((ICrafting) this.crafters.get(i)).sendProgressBarUpdate(this, j - 4, this.tileEntity.getAmountProducedBy(j - 4));

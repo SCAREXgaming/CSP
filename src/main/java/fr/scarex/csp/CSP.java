@@ -11,6 +11,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import fr.scarex.csp.block.CSPBlocks;
+import fr.scarex.csp.block.SolarPanelFrame;
 import fr.scarex.csp.item.CSPItems;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -34,7 +35,7 @@ public class CSP
     public static final CreativeTabs CREATIVE_TAB = new CreativeTabs(MODID) {
         @Override
         public Item getTabIconItem() {
-            return Item.getItemFromBlock(Blocks.redstone_lamp);
+            return Item.getItemFromBlock(CSPBlocks.blockMap.get(SolarPanelFrame.class));
         }
     };
 
@@ -63,6 +64,9 @@ public class CSP
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         long t = System.currentTimeMillis();
+        
+        CSPItems.postInit();
+        CSPBlocks.postInit();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, CSP.PROXY);
 

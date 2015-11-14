@@ -1,19 +1,19 @@
 package fr.scarex.csp.inventory.slot;
 
-import fr.scarex.csp.item.SolarCellFrame;
+import fr.scarex.csp.item.SolarCellSupport;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class SlotSolarCellFrame extends Slot
+public class SlotSolarCellSupport extends Slot
 {
-    public SlotSolarCellFrame(IInventory inv, int index, int x, int y) {
+    public SlotSolarCellSupport(IInventory inv, int index, int x, int y) {
         super(inv, index, x, y);
     }
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        return stack.getItem() instanceof SolarCellFrame;
+        return stack.getItem() instanceof SolarCellSupport;
     }
 
     @Override

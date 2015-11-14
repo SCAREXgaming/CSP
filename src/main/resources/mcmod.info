@@ -8,9 +8,9 @@
   "url": "http://scarex.fr",
   "updateUrl": "",
   "authorList": ["SCAREX"],
-  "credits": "Utybo for the idea",
+  "credits": "Utybo for the idea & Kujaroth for the solar panel model/texture",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["CoFHCore", "ThermalExpansion", "ThermalFoundation"]
 }
 ]

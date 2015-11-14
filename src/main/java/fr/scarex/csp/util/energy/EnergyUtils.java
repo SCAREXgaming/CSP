@@ -16,6 +16,7 @@ public class EnergyUtils
     /**
      * use power distribution instead
      */
+    @Deprecated
     public static void transmit(IEnergyHandler emitter) {
         if (!((TileEntity) emitter).getWorldObj().isRemote) {
             List<ForgeDirection> possibleDirections = new ArrayList<ForgeDirection>();

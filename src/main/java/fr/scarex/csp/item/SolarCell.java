@@ -29,19 +29,22 @@ public class SolarCell extends AbstractItem implements ISolarCell
         super.init();
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
+    }
 
+    @Override
+    public void registerCrafts() {
         ItemStack leadStack = TFItems.ingotLead.copy();
         leadStack.stackSize = 4;
-        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellSupport.class)), leadStack, new ItemStack(this, 1, 0));
+        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellFrame.class)), leadStack, new ItemStack(this, 1, 0));
         ItemStack electrumStack = TFItems.ingotElectrum.copy();
         electrumStack.stackSize = 4;
-        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellSupport.class)), electrumStack, new ItemStack(this, 1, 1));
+        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellFrame.class)), electrumStack, new ItemStack(this, 1, 1));
         ItemStack signalumStack = TFItems.ingotSignalum.copy();
         signalumStack.stackSize = 4;
-        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellSupport.class)), signalumStack, new ItemStack(this, 1, 2));
+        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellFrame.class)), signalumStack, new ItemStack(this, 1, 2));
         ItemStack enderiumStack = TFItems.ingotEnderium.copy();
         enderiumStack.stackSize = 4;
-        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellSupport.class)), enderiumStack, new ItemStack(this, 1, 3));
+        ThermalExpansionHelper.addSmelterRecipe(2000, new ItemStack(CSPItems.itemMap.get(SolarCellFrame.class)), enderiumStack, new ItemStack(this, 1, 3));
     }
 
     @Override

@@ -11,7 +11,7 @@ import fr.scarex.csp.CSP;
 import fr.scarex.csp.block.CSPBlocks;
 import fr.scarex.csp.block.SolarPanelFrame;
 import fr.scarex.csp.inventory.container.ContainerSolarPanelFrame;
-import fr.scarex.csp.item.SolarCellFrame;
+import fr.scarex.csp.item.SolarCellSupport;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -48,7 +48,7 @@ public class GuiSolarPanelFrame extends GuiContainer implements IContainerToolti
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
 
         for (byte i = 0; i < 4; i++) {
-            if (this.inv.getStackInSlot(i) != null && this.inv.getStackInSlot(i).getItem() instanceof SolarCellFrame) {
+            if (this.inv.getStackInSlot(i) != null && this.inv.getStackInSlot(i).getItem() instanceof SolarCellSupport) {
                 this.drawTexturedModalRect(k + 51, l + i * 26 + 11, 176, 11, 52, 26);
                 this.drawTexturedModalRect(k + 103, l + i * 26 + 11, 176, 37, 52, 26);
             }
