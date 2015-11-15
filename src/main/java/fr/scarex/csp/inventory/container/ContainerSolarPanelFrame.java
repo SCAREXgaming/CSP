@@ -19,6 +19,7 @@ public class ContainerSolarPanelFrame extends Container
     public final TileEntitySolarPanel tileEntity;
     public final InventoryPlayer playerInv;
     public final int[] stackProduced = new int[16];
+    public int timeLastProd = 1;
 
     public ContainerSolarPanelFrame(TileEntitySolarPanel tileEntity, InventoryPlayer playerInv) {
         this.tileEntity = tileEntity;
@@ -128,6 +129,7 @@ public class ContainerSolarPanelFrame extends Container
         super.detectAndSendChanges();
 
         for (int i = 0; i < this.crafters.size(); i++) {
+            ((ICrafting) this.crafters.get(i)).sendProgressBarUpdate(this, 17, this.tileEntity.timeLastProd);
             for (byte j = 4; j < 20; j++) {
                 ((ICrafting) this.crafters.get(i)).sendProgressBarUpdate(this, j - 4, this.tileEntity.getAmountProducedBy(j - 4));
             }
@@ -136,6 +138,9 @@ public class ContainerSolarPanelFrame extends Container
 
     @Override
     public void updateProgressBar(int slot, int amount) {
-        this.stackProduced[slot] = amount;
+        if (slot < 16)
+            this.stackProduced[slot] = amount;
+        else
+            this.timeLastProd = amount;
     }
 }

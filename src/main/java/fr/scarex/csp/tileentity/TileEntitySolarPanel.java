@@ -1,10 +1,15 @@
 package fr.scarex.csp.tileentity;
 
+import java.util.List;
+
 import cofh.api.energy.EnergyStorage;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.item.ISolarCell;
 import fr.scarex.csp.item.ISolarUpgrade;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,8 +17,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -25,6 +34,9 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     public String customName;
     public int numPlayersUsing = 0;
     public final int[] stackProducing = new int[16];
+    public int totalProd = 0;
+    public long lastWorldTime;
+    public int timeLastProd = 1;
 
     public TileEntitySolarPanel() {
         super(CAPACITY, 0, OUTPUT);
@@ -38,6 +50,8 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     @Override
     public void updateEntity() {
         if (!this.worldObj.isRemote && this.canGenerate()) {
+            this.timeLastProd = (int) (this.worldObj.getTotalWorldTime() - this.lastWorldTime);
+            this.lastWorldTime = this.worldObj.getTotalWorldTime();
             int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord + 1, this.zCoord) - this.worldObj.skylightSubtracted;
             float f = this.worldObj.getCelestialAngleRadians(1.0F);
 
@@ -55,6 +69,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
             for (int i = 20; i < 24; i++) {
                 if (this.getStackInSlot(i) != null) total = ((ISolarUpgrade) this.getStackInSlot(i).getItem()).generate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), total);
             }
+            this.totalProd = total;
             this.storage.modifyEnergyStored(total);
             this.transmit();
         }
@@ -231,5 +246,34 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     public int getAmountProducedBy(int index) {
         return this.stackProducing[index];
+    }
+
+    @Override
+    public NBTTagCompound getWailaNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+        tag = super.getWailaNBTData(player, te, tag, world, x, y, z);
+        tag.setIntArray("Production", this.stackProducing);
+        tag.setInteger("TotalProduction", this.totalProd);
+        tag.setInteger("TimeSinceLastProduction", this.timeLastProd);
+        return tag;
+    }
+
+    @Override
+    public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+        int prod = 0;
+        int[] prodArray = accessor.getNBTData().getIntArray("Production");
+        if (prodArray != null && prodArray.length > 0) {
+            boolean detailed = accessor.getPlayer().isSneaking();
+            if (!detailed) currenttip.add(EnumChatFormatting.WHITE + "" + EnumChatFormatting.ITALIC + "<Hold shift>");
+            for (byte i = 0; i < 4; i++) {
+                if (prodArray[i * 4] > 0 || prodArray[i * 4 + 1] > 0 || prodArray[i * 4 + 2] > 0 || prodArray[i * 4 + 3] > 0) {
+                    for (byte j = 0; j < 4; j++) {
+                        prod += prodArray[i * 4 + j];
+                    }
+                    if (detailed) currenttip.add(EnumChatFormatting.WHITE + "" + (i + 1) + "-" + StatCollector.translateToLocalFormatted("tile.csp_SolarPanelFrame.currentlyProducing", (prodArray[i * 4] + prodArray[i * 4 + 1] + prodArray[i * 4 + 2] + prodArray[i * 4 + 3]) / accessor.getNBTData().getInteger("TimeSinceLastProduction")));
+                }
+            }
+        }
+        currenttip.add(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted("tile.csp_SolarPanelFrame.currentlyProducing", accessor.getNBTData().getInteger("TotalProduction") / accessor.getNBTData().getInteger("TimeSinceLastProduction")));
+        return currenttip;
     }
 }

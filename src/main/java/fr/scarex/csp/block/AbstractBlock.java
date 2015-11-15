@@ -1,11 +1,16 @@
 package fr.scarex.csp.block;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.IRegister;
 import fr.scarex.csp.client.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemStack;
 
 public abstract class AbstractBlock extends Block implements IRegister
 {
@@ -18,6 +23,10 @@ public abstract class AbstractBlock extends Block implements IRegister
         GameRegistry.registerBlock(this, this.getName());
         if (this.getTileEntityClass() != null) {
             GameRegistry.registerTileEntity(this.getTileEntityClass(), this.getName());
+        } else {
+            for (ItemStack stack : this.getAllItemStacks()) {
+                FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", stack);
+            }
         }
     }
 
@@ -40,7 +49,7 @@ public abstract class AbstractBlock extends Block implements IRegister
     public int getRenderType() {
         return this.hasSpecialRender() ? ClientProxy.renderId : super.getRenderType();
     }
-    
+
     public boolean hasSpecialRender() {
         return false;
     }
@@ -52,4 +61,10 @@ public abstract class AbstractBlock extends Block implements IRegister
 
     @Override
     public void registerCrafts() {}
+
+    public List<ItemStack> getAllItemStacks() {
+        ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
+        stacks.add(new ItemStack(this));
+        return stacks;
+    }
 }

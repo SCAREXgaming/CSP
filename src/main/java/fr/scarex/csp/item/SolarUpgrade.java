@@ -2,14 +2,17 @@ package fr.scarex.csp.item;
 
 import java.util.List;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
 {
@@ -37,6 +40,13 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
     }
 
     @Override
+    public void registerCrafts() {
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 0), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "dustPyrotheum"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 1), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "ingotGold"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 2), "AXA", "XZX", "YXY", 'A', "ingotEnderium", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "gemEmerald"));
+    }
+
+    @Override
     public String getUnlocalizedName(ItemStack stack) {
         return this.getUnlocalizedName() + TYPES[stack.getItemDamage() & 3];
     }
@@ -57,7 +67,7 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
     public void updateUpgrade(World world, int x, int y, int z, TileEntitySolarPanel tile, ItemStack upgrade) {
         if (upgrade.getItemDamage() == 1) {
             tile.getEnergyStorage().setCapacity(upgrade.stackSize * 1000);
-            tile.getEnergyStorage().setMaxExtract(upgrade.stackSize * 100);
+            tile.getEnergyStorage().setMaxExtract(upgrade.stackSize * 64);
         }
     }
 
@@ -68,7 +78,11 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
 
     @Override
     public boolean canBaseGenerate(World world, int x, int y, int z, ItemStack upgrade, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky) {
-        return upgrade.getItemDamage() == 0 ? true : baseGenerate;
+        switch (upgrade.getItemDamage()) {
+        case 0:
+            return canSeeTheSky && !hasNoSky && (upgrade.stackSize >= 2 ? true : world.getTotalWorldTime() % 2 == 0);
+        }
+        return baseGenerate;
     }
 
     @Override
@@ -78,6 +92,11 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
 
     @Override
     public int generate(World world, int x, int y, int z, ItemStack upgrade, int total) {
-        return upgrade.getItemDamage() == 2 ? total * 2 : total;
+        switch (upgrade.getItemDamage()) {
+        case 2:
+            int stacksize = upgrade.stackSize > 8 ? 8 : upgrade.stackSize;
+            return total + total * stacksize / 8;
+        }
+        return total;
     }
 }

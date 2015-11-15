@@ -13,7 +13,7 @@ public class CSPBlocks
     public static void preInit() {
         addBlock(new SolarPanelFrame());
         addBlock(new SolarBlock());
-        
+
         for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
             e.getValue().register();
         }
@@ -29,7 +29,7 @@ public class CSPBlocks
         for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
             e.getValue().registerCrafts();
         }
-        
+
         ItemHelper.addStorageRecipe(new ItemStack(blockMap.get(SolarBlock.class)), "ingotSolar");
     }
 

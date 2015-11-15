@@ -20,9 +20,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class TESRSolarPanelFrame extends AbstractTESR
 {
-    public static ModelSolarPanelFrame MODEL = new ModelSolarPanelFrame();
-    public static ResourceLocation TEXTURE = new ResourceLocation(CSP.MODID, "textures/models/blocks/SolarPanelFrame.png");
-    
+    public static final ModelSolarPanelFrame MODEL = new ModelSolarPanelFrame();
+    public static final ResourceLocation TEXTURE = new ResourceLocation(CSP.MODID, "textures/models/blocks/SolarPanelFrame.png");
+
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float prt) {
         this.renderTileEntitySolarPanelFrameAt((TileEntitySolarPanel) tile, x, y, z, prt);
@@ -35,7 +35,7 @@ public class TESRSolarPanelFrame extends AbstractTESR
         this.bindTexture(TEXTURE);
         MODEL.renderAll();
         GL11.glPopMatrix();
-        
+
         if (tile != null) {
             for (byte i = 0; i < 4; i++) {
                 for (byte j = 0; j < 4; j++) {

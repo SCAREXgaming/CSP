@@ -19,9 +19,4 @@ public class ItemBlockEnergy extends ItemBlock
         super.addInformation(stack, p, list, debug);
         if (CSP.DEBUG && stack.getTagCompound() != null) list.add(stack.getTagCompound().toString());
     }
-
-    @Override
-    public String getUnlocalizedName() {
-        return super.getUnlocalizedName();
-    }
 }

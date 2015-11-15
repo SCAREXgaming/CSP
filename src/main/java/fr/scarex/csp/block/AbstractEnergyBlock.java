@@ -6,6 +6,7 @@ import cofh.api.block.IDismantleable;
 import cofh.core.block.TileCoFHBase;
 import cofh.core.util.CoreUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
+import fr.scarex.csp.CSP;
 import fr.scarex.csp.block.itemblock.ItemBlockEnergy;
 import fr.scarex.csp.tileentity.AbstractTileEntityEnergy;
 import net.minecraft.block.Block;
@@ -41,7 +42,7 @@ public abstract class AbstractEnergyBlock extends AbstractBlock implements IDism
     }
 
     public NBTTagCompound getItemStackTag(World world, int x, int y, int z) {
-        if (world.getTileEntity(x, y, z) instanceof AbstractTileEntityEnergy) { return ((AbstractTileEntityEnergy) world.getTileEntity(x, y, z)).writeExtraCompound(); }
+        if (world.getTileEntity(x, y, z) instanceof AbstractTileEntityEnergy) return ((AbstractTileEntityEnergy) world.getTileEntity(x, y, z)).writeExtraCompound();
         return null;
     }
 

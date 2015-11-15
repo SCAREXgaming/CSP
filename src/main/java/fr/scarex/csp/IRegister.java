@@ -7,6 +7,6 @@ public interface IRegister
     public void register();
 
     public void init();
-    
+
     public void registerCrafts();
 }

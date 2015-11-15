@@ -1,0 +1,23 @@
+# Blocks
+tile.csp_SolarPanelFrame.name=Cadre de Panneau Solaire
+tile.csp_SolarPanelFrame.currentlyProducing=En train de produire : %d RF/t
+tile.csp_SolarBlock.name=Block Solaire
+
+# Items
+item.csp_SolarCellBasic.name=Cellule Photovoltaïque (Basic)
+item.csp_SolarCellHardened.name=Cellule Photovoltaïque (Hardened)
+item.csp_SolarCellReinforced.name=Cellule Photovoltaïque (Reinforced)
+item.csp_SolarCellResonant.name=Cellule Photovoltaïque (Resonant)
+item.csp_SolarCellFrame.name=Cadre de Cellule Photovoltaïque
+item.csp_SolarCell.maxProduction=Production Maximale : %s RF/t
+
+item.csp_SolarUpgradeSpeed.name=Mise à Niveau de Vitesse
+item.csp_SolarUpgradePower.name=Mise à Niveau d'Énergie
+item.csp_SolarUpgradeProduction.name=Mise à Niveau de production
+
+item.csp_SolarCellSupport.name=Support de Cellule Photovoltaïque
+item.csp_SolarIngot.name=Lingot Solaire
+item.csp_SolarNugget.name=Pépite Solaire
+
+#Creative tabs
+itemGroup.csp=Custom Solar Panels

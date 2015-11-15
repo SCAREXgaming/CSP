@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class AbstractTileEntityEnergy extends TileEntity implements IEnergyHandler
+public class AbstractTileEntityEnergy extends AbstractCSPTileEntity implements IEnergyHandler
 {
     protected PowerDistributor powerDistributor;
     protected final EnergyStorage storage;

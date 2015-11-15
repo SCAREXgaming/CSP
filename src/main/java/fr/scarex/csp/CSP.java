@@ -7,6 +7,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -46,6 +47,8 @@ public class CSP
         CSPItems.preInit();
         CSPBlocks.preInit();
 
+        FMLInterModComms.sendMessage("Waila", "register", "fr.scarex.csp.waila.CSPWailaCompat.load");
+
         timeToLoad += (System.currentTimeMillis() - t);
     }
 
@@ -64,7 +67,7 @@ public class CSP
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         long t = System.currentTimeMillis();
-        
+
         CSPItems.postInit();
         CSPBlocks.postInit();
 

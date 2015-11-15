@@ -76,8 +76,8 @@ public class GuiSolarPanelFrame extends GuiContainer implements IContainerToolti
         if (slot != null && slot.getHasStack() && slot.slotNumber >= 0) {
             int[] stackP = ((ContainerSolarPanelFrame) this.inventorySlots).stackProduced;
             if (slot.slotNumber < 4)
-                tooltip.add(EnumChatFormatting.GOLD + StatCollector.translateToLocalFormatted(CSPBlocks.blockMap.get(SolarPanelFrame.class).getUnlocalizedName() + ".currentlyProducing", stackP[slot.slotNumber * 4] + stackP[slot.slotNumber * 4 + 1] + stackP[slot.slotNumber * 4 + 2] + stackP[slot.slotNumber * 4 + 3]));
-            else if (slot.slotNumber < 20) tooltip.add(EnumChatFormatting.GOLD + StatCollector.translateToLocalFormatted(CSPBlocks.blockMap.get(SolarPanelFrame.class).getUnlocalizedName() + ".currentlyProducing", stackP[slot.slotNumber - 4]));
+                tooltip.add(EnumChatFormatting.GOLD + StatCollector.translateToLocalFormatted(CSPBlocks.blockMap.get(SolarPanelFrame.class).getUnlocalizedName() + ".currentlyProducing", (stackP[slot.slotNumber * 4] + stackP[slot.slotNumber * 4 + 1] + stackP[slot.slotNumber * 4 + 2] + stackP[slot.slotNumber * 4 + 3]) / ((ContainerSolarPanelFrame) this.inventorySlots).timeLastProd));
+            else if (slot.slotNumber < 20) tooltip.add(EnumChatFormatting.GOLD + StatCollector.translateToLocalFormatted(CSPBlocks.blockMap.get(SolarPanelFrame.class).getUnlocalizedName() + ".currentlyProducing", stackP[slot.slotNumber - 4] / ((ContainerSolarPanelFrame) this.inventorySlots).timeLastProd));
         }
         return tooltip;
     }

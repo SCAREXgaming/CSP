@@ -1,14 +1,23 @@
 # Blocks
-tile.csp_SolarPanelFrame.name=Solar panel frame
-tile.csp_SolarPanelFrame.currentlyProducing=Currently producing : %d
+tile.csp_SolarPanelFrame.name=Solar Panel Frame
+tile.csp_SolarPanelFrame.currentlyProducing=Currently producing : %d RF/t
+tile.csp_SolarBlock.name=Solar Block
 
 # Items
-item.csp_SolarCellBasic.name=Solar cell (Basic)
-item.csp_SolarCellHardened.name=Solar cell (Hardened)
-item.csp_SolarCellReinforced.name=Solar cell (Reinforced)
-item.csp_SolarCellResonant.name=Solar cell (Resonant)
-item.csp_SolarCellFrame.name=Solar cell frame
-item.csp_SolarCell.maxProduction=Max production : %s
+item.csp_SolarCellBasic.name=Solar Cell (Basic)
+item.csp_SolarCellHardened.name=Solar Cell (Hardened)
+item.csp_SolarCellReinforced.name=Solar Cell (Reinforced)
+item.csp_SolarCellResonant.name=Solar Cell (Resonant)
+item.csp_SolarCellFrame.name=Solar Cell Frame
+item.csp_SolarCell.maxProduction=Max Production : %s RF/t
+
+item.csp_SolarUpgradeSpeed.name=Speed Upgrade
+item.csp_SolarUpgradePower.name=Power Upgrade
+item.csp_SolarUpgradeProduction.name=Production Upgrade
+
+item.csp_SolarCellSupport.name=Solar Cell Support
+item.csp_SolarIngot.name=Solar Ingot
+item.csp_SolarNugget.name=Solar Nugget
 
 #Creative tabs
 itemGroup.csp=Custom Solar Panels
