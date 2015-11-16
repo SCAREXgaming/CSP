@@ -19,13 +19,13 @@ public class CSPItems
         addItem(new SolarUpgrade());
 
         for (Entry<Class, AbstractItem> e : itemMap.entrySet()) {
-            e.getValue().register();
+            e.getValue().init();
         }
     }
 
     public static void init() {
         for (Entry<Class, AbstractItem> e : itemMap.entrySet()) {
-            e.getValue().init();
+            e.getValue().register();
         }
     }
 

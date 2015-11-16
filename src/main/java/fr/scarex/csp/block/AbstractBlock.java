@@ -5,6 +5,8 @@ import java.util.List;
 
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.IRegister;
 import fr.scarex.csp.client.ClientProxy;
@@ -40,11 +42,17 @@ public abstract class AbstractBlock extends Block implements IRegister
     }
 
     @Override
+    public boolean hasTileEntity(int metadata) {
+        return this.getTileEntityClass() != null;
+    }
+
+    @Override
     public void init() {
         this.setBlockName(this.getName());
         this.setCreativeTab(CSP.CREATIVE_TAB);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public int getRenderType() {
         return this.hasSpecialRender() ? ClientProxy.renderId : super.getRenderType();

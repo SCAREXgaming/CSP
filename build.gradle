@@ -63,10 +63,6 @@ repositories {
         url "http://mobiusstrip.eu/maven/"
     }
     maven {
-        name 'Player'
-        url "http://maven.ic2.player.to/"
-    }
-    maven {
         name 'RX14'
         url "http://mvn.rx14.co.uk/repo/"
     }
@@ -116,7 +112,6 @@ dependencies {
     compile "cofh:ThermalExpansion:[${mc_version}]${te_version}"
     compile "cofh:ThermalDynamics:[${mc_version}]${td_version}"
     compile "cofh:MineFactoryReloaded:[${mc_version}]${mfr_version}"
-    compile "net.industrial-craft:industrialcraft-2:${ic2_version}-experimental:dev"
     compile "buildcraft:buildcraft:${bc_version}:dev"
     compile "com.enderio:EnderIO:${mc_version}-${enderio_version}:dev"
     compile "inventorytweaks:InventoryTweaks:${invtweaks_version}"

@@ -1,17 +1,12 @@
 package fr.scarex.csp.block;
 
-import java.util.List;
-
 import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
+import fr.scarex.csp.item.SolarCellSupport;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -37,11 +32,6 @@ public class SolarPanelFrame extends AbstractEnergyBlock
     }
 
     @Override
-    public boolean hasTileEntity(int metadata) {
-        return true;
-    }
-
-    @Override
     public TileEntity createTileEntity(World world, int metadata) {
         return new TileEntitySolarPanel();
     }
@@ -53,7 +43,15 @@ public class SolarPanelFrame extends AbstractEnergyBlock
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        if (!player.isSneaking()) player.openGui(CSP.INSTANCE, 0, world, x, y, z);
+        if (!player.isSneaking() && !world.isRemote) {
+            int stacksize;
+            if (player.getCurrentEquippedItem() != null && world.getTileEntity(x, y, z) instanceof TileEntitySolarPanel && (stacksize = ((TileEntitySolarPanel) world.getTileEntity(x, y, z)).canInputItem(player, player.getCurrentEquippedItem().copy())) > 0) {
+                player.getCurrentEquippedItem().stackSize -= stacksize;
+                if (player.getCurrentEquippedItem().stackSize <= 0) player.setCurrentItemOrArmor(0, null);
+            } else {
+                player.openGui(CSP.INSTANCE, 0, world, x, y, z);
+            }
+        }
         return true;
     }
 
@@ -65,5 +63,10 @@ public class SolarPanelFrame extends AbstractEnergyBlock
     @Override
     public boolean hasSpecialRender() {
         return true;
+    }
+
+    @Override
+    protected String getTextureName() {
+        return "glass";
     }
 }

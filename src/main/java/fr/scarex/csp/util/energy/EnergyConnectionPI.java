@@ -1,7 +1,7 @@
 package fr.scarex.csp.util.energy;
 
-import net.minecraftforge.common.util.ForgeDirection;
 import cofh.api.energy.IEnergyConnection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @author Crazypants

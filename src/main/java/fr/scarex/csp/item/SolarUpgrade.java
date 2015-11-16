@@ -2,15 +2,23 @@ package fr.scarex.csp.item;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
+import fr.scarex.csp.CSPConfiguration;
+import fr.scarex.csp.tileentity.AbstractCSPTileEntity;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -64,10 +72,42 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
     }
 
     @Override
-    public void updateUpgrade(World world, int x, int y, int z, TileEntitySolarPanel tile, ItemStack upgrade) {
-        if (upgrade.getItemDamage() == 1) {
-            tile.getEnergyStorage().setCapacity(upgrade.stackSize * 1000);
-            tile.getEnergyStorage().setMaxExtract(upgrade.stackSize * 64);
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean debug) {
+        super.addInformation(stack, player, list, debug);
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            switch (stack.getItemDamage()) {
+            case 0:
+                list.add(EnumChatFormatting.GREEN + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".info"));
+                list.add(EnumChatFormatting.GREEN + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".info1"));
+                break;
+            case 1:
+                if (CSPConfiguration.powerUpgradeStorageRatio > 0 || CSPConfiguration.powerUpgradeOutputRatio > 0) list.add(EnumChatFormatting.GREEN + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".info"));
+                if (CSPConfiguration.powerUpgradeStorageRatio == 0) list.add(EnumChatFormatting.RED + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".storage.desactivated"));
+                if (CSPConfiguration.powerUpgradeOutputRatio == 0) list.add(EnumChatFormatting.RED + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".output.desactivated"));
+                break;
+            case 2:
+                if (CSPConfiguration.productionUpgradeStackSize > 0)
+                    list.add(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted(this.getUnlocalizedName(stack) + ".info", CSPConfiguration.productionUpgradeStackSize, this.getItemStackDisplayName(stack)));
+                else
+                    list.add(EnumChatFormatting.RED + StatCollector.translateToLocal(this.getUnlocalizedName(stack) + ".desactivated"));
+                break;
+            }
+        } else {
+            list.add(EnumChatFormatting.WHITE + "" + EnumChatFormatting.ITALIC + StatCollector.translateToLocal("misc." + CSP.MODID + "_hold_shift"));
+        }
+    }
+
+    @Override
+    public void onReadFromNBT(World world, int x, int y, int z, AbstractCSPTileEntity tile, ItemStack upgrade, NBTTagCompound comp) {}
+
+    @Override
+    public void onWriteToNBT(World world, int x, int y, int z, AbstractCSPTileEntity tile, ItemStack upgrade, NBTTagCompound comp) {}
+
+    @Override
+    public void load(World world, int x, int y, int z, AbstractCSPTileEntity tile, ItemStack upgrade) {
+        if (tile instanceof TileEntitySolarPanel && upgrade.getItemDamage() == 1) {
+            ((TileEntitySolarPanel) tile).getEnergyStorage().setCapacity(upgrade.stackSize * CSPConfiguration.powerUpgradeStorageRatio);
+            ((TileEntitySolarPanel) tile).getEnergyStorage().setMaxExtract(upgrade.stackSize * CSPConfiguration.powerUpgradeOutputRatio);
         }
     }
 
@@ -94,8 +134,10 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
     public int generate(World world, int x, int y, int z, ItemStack upgrade, int total) {
         switch (upgrade.getItemDamage()) {
         case 2:
-            int stacksize = upgrade.stackSize > 8 ? 8 : upgrade.stackSize;
-            return total + total * stacksize / 8;
+            if (CSPConfiguration.productionUpgradeStackSize > 0) {
+                int stacksize = upgrade.stackSize > CSPConfiguration.productionUpgradeStackSize ? CSPConfiguration.productionUpgradeStackSize : upgrade.stackSize;
+                return total + total * stacksize / CSPConfiguration.productionUpgradeStackSize;
+            }
         }
         return total;
     }

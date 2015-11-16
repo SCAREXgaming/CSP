@@ -13,6 +13,6 @@ public class SolarCellFrame extends AbstractItem
 
     @Override
     public void registerCrafts() {
-        GameRegistry.addRecipe(new ShapedOreRecipe(this, " X ", "XYX", " X ", 'X', Blocks.iron_bars, 'Y', "nuggetSolar"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(this, " X ", "XYX", " X ", 'X', Blocks.iron_bars, 'Y', "ingotSolar"));
     }
 }

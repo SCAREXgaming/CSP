@@ -5,6 +5,7 @@ import java.util.List;
 import cofh.api.modhelpers.ThermalExpansionHelper;
 import cofh.thermalfoundation.item.TFItems;
 import fr.scarex.csp.CSP;
+import fr.scarex.csp.CSPConfiguration;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,8 +20,6 @@ public class SolarCell extends AbstractItem implements ISolarCell
     public static final String[] LEVELS = new String[] {
             "Basic", "Hardened",
             "Reinforced", "Resonant" };
-    public static final int[] LEVELS_RATES = new int[] {
-            5, 10, 30, 50 };
     public static final IIcon[] icons = new IIcon[LEVELS.length];
     public static final IIcon[] worldIcons = new IIcon[LEVELS.length];
 
@@ -84,7 +83,17 @@ public class SolarCell extends AbstractItem implements ISolarCell
 
     @Override
     public int amountToGenerate(World world, int x, int y, int z, ItemStack stack, float sunPosInRadians, int sunLight, float ratio) {
-        return stack.getItemDamage() >= 0 && stack.getItemDamage() < LEVELS_RATES.length ? Math.round((float) ratio / (15.0F / LEVELS_RATES[stack.getItemDamage()])) : 0;
+        switch (stack.getItemDamage()) {
+        case 0:
+            return CSPConfiguration.solarCellBasicProduction > 0 ? Math.round((float) ratio / (15.0F / CSPConfiguration.solarCellBasicProduction)) : 0;
+        case 1:
+            return CSPConfiguration.solarCellHardenedProduction > 0 ? Math.round((float) ratio / (15.0F / CSPConfiguration.solarCellHardenedProduction)) : 0;
+        case 2:
+            return CSPConfiguration.solarCellReinforcedProduction > 0 ? Math.round((float) ratio / (15.0F / CSPConfiguration.solarCellReinforcedProduction)) : 0;
+        case 3:
+            return CSPConfiguration.solarCellResonantProduction > 0 ? Math.round((float) ratio / (15.0F / CSPConfiguration.solarCellResonantProduction)) : 0;
+        }
+        return 0;
     }
 
     @Override
@@ -95,6 +104,19 @@ public class SolarCell extends AbstractItem implements ISolarCell
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean debug) {
         super.addInformation(stack, player, list, debug);
-        if (stack.getItemDamage() >= 0 && stack.getItemDamage() < LEVELS_RATES.length) list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", LEVELS_RATES[stack.getItemDamage()]));
+        switch (stack.getItemDamage()) {
+        case 0:
+            list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellBasicProduction));
+            break;
+        case 1:
+            list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellHardenedProduction));
+            break;
+        case 2:
+            list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellReinforcedProduction));
+            break;
+        case 3:
+            list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellResonantProduction));
+            break;
+        }
     }
 }

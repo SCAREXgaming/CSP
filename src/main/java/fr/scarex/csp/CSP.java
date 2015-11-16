@@ -15,15 +15,16 @@ import fr.scarex.csp.block.CSPBlocks;
 import fr.scarex.csp.block.SolarPanelFrame;
 import fr.scarex.csp.item.CSPItems;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = CSP.MODID, name = CSP.NAME, version = CSP.VERSION)
+@Mod(modid = CSP.MODID, name = CSP.NAME, version = CSP.VERSION, guiFactory = CSP.GUI_FACTORY)
 public class CSP
 {
     public static final String MODID = "csp";
     public static final String NAME = "Custom Solar Panels";
     public static final String VERSION = "@VERSION@";
+    public static final String GUI_FACTORY = "fr.scarex.csp.CSPConfiguration";
     public static final boolean DEBUG = "@DEBUG@" == "@" + "DEBUG@";
     private static long timeToLoad = 0L;
     @SidedProxy(serverSide = "fr.scarex.csp.CommonProxy", clientSide = "fr.scarex.csp.client.ClientProxy")
@@ -43,6 +44,9 @@ public class CSP
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         long t = System.currentTimeMillis();
+
+        CSPConfiguration.CONFIG = new Configuration(event.getSuggestedConfigurationFile());
+        CSPConfiguration.syncConfig();
 
         CSPItems.preInit();
         CSPBlocks.preInit();

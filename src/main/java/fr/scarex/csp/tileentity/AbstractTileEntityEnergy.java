@@ -3,19 +3,19 @@ package fr.scarex.csp.tileentity;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyHandler;
 import fr.scarex.csp.util.BlockCoord;
+import fr.scarex.csp.util.energy.CSPEnergyStorage;
 import fr.scarex.csp.util.energy.PowerDistributor;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class AbstractTileEntityEnergy extends AbstractCSPTileEntity implements IEnergyHandler
 {
     protected PowerDistributor powerDistributor;
-    protected final EnergyStorage storage;
+    protected final CSPEnergyStorage storage;
 
     public AbstractTileEntityEnergy(int capacity, int input, int output) {
-        this.storage = new EnergyStorage(capacity, input, output);
+        this.storage = new CSPEnergyStorage(capacity, input, output);
     }
 
     @Override
@@ -49,6 +49,7 @@ public class AbstractTileEntityEnergy extends AbstractCSPTileEntity implements I
         if (canTransmit <= 0) return;
         int transmitted = this.powerDistributor.transmitEnergy(this.worldObj, canTransmit);
         this.storage.setEnergyStored(this.storage.getEnergyStored() - transmitted);
+        this.storage.update();
     }
 
     @Override
@@ -74,6 +75,7 @@ public class AbstractTileEntityEnergy extends AbstractCSPTileEntity implements I
     }
 
     public void onNeighborBlockChange(Block block) {
+        this.storage.update();
         if (this.powerDistributor != null) this.powerDistributor.neighboursChanged();
     }
 }

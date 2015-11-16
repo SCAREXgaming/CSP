@@ -6,8 +6,8 @@ import cofh.api.block.IDismantleable;
 import cofh.core.block.TileCoFHBase;
 import cofh.core.util.CoreUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
-import fr.scarex.csp.CSP;
 import fr.scarex.csp.block.itemblock.ItemBlockEnergy;
+import fr.scarex.csp.tileentity.AbstractCSPTileEntity;
 import fr.scarex.csp.tileentity.AbstractTileEntityEnergy;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -26,6 +26,8 @@ public abstract class AbstractEnergyBlock extends AbstractBlock implements IDism
 {
     protected AbstractEnergyBlock(Material m) {
         super(m);
+        this.setHardness(15.0F);
+        this.setResistance(25.0F);
     }
 
     @Override
@@ -143,8 +145,8 @@ public abstract class AbstractEnergyBlock extends AbstractBlock implements IDism
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
         TileEntity ent = world.getTileEntity(x, y, z);
-        if (ent instanceof AbstractTileEntityEnergy) {
-            AbstractTileEntityEnergy te = (AbstractTileEntityEnergy) ent;
+        if (ent instanceof AbstractCSPTileEntity) {
+            AbstractCSPTileEntity te = (AbstractCSPTileEntity) ent;
             te.onNeighborBlockChange(block);
         }
     }

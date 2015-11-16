@@ -5,6 +5,8 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import codechicken.nei.guihook.IContainerTooltipHandler;
+import cofh.core.render.IconRegistry;
+import cofh.lib.render.RenderHelper;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.Optional;
 import fr.scarex.csp.CSP;
@@ -19,6 +21,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -35,6 +38,11 @@ public class GuiSolarPanelFrame extends GuiContainer implements IContainerToolti
         this.playerInv = playerInv;
         this.inv = inv;
         this.ySize = 248;
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
     }
 
     @Override
@@ -84,6 +92,28 @@ public class GuiSolarPanelFrame extends GuiContainer implements IContainerToolti
 
     public Slot getSelectedSlot() {
         return ObfuscationReflectionHelper.getPrivateValue(GuiContainer.class, this, "theSlot", "field_147006_u");
+    }
+
+    public void drawIcon(IIcon paramIIcon, int paramInt1, int paramInt2, int paramInt3) {
+        if (paramInt3 == 0) {
+            RenderHelper.setBlockTextureSheet();
+        } else {
+            RenderHelper.setItemTextureSheet();
+        }
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        drawTexturedModelRectFromIcon(paramInt1, paramInt2, paramIIcon, 16, 16);
+    }
+
+    public void drawIcon(String paramString, int paramInt1, int paramInt2, int paramInt3) {
+        drawIcon(getIcon(paramString), paramInt1, paramInt2, paramInt3);
+    }
+
+    public IIcon getIcon(String paramString) {
+        return IconRegistry.getIcon(paramString);
+    }
+
+    public FontRenderer getFontRenderer() {
+        return this.fontRendererObj;
     }
 
     @Override

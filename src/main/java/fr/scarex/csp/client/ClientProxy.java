@@ -6,7 +6,9 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import fr.scarex.csp.CommonProxy;
 import fr.scarex.csp.block.AbstractBlock;
 import fr.scarex.csp.client.render.block.AbstractTESR;
+import fr.scarex.csp.client.render.block.TESRSolarCellConverter;
 import fr.scarex.csp.client.render.block.TESRSolarPanelFrame;
+import fr.scarex.csp.tileentity.TileEntitySolarCellConverter;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -23,6 +25,7 @@ public class ClientProxy extends CommonProxy implements ISimpleBlockRenderingHan
 
         RenderingRegistry.registerBlockHandler(this);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySolarPanel.class, new TESRSolarPanelFrame());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySolarCellConverter.class, new TESRSolarCellConverter());
     }
 
     @Override

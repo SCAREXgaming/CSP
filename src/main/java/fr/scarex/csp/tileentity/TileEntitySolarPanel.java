@@ -2,15 +2,17 @@ package fr.scarex.csp.tileentity;
 
 import java.util.List;
 
-import cofh.api.energy.EnergyStorage;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.item.ISolarCell;
 import fr.scarex.csp.item.ISolarUpgrade;
+import fr.scarex.csp.item.SolarCellSupport;
+import fr.scarex.csp.util.energy.CSPEnergyStorage;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -26,11 +28,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements IInventory
+public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements IInventory, ISidedInventory
 {
     public static final int CAPACITY = 700;
     public static final int OUTPUT = 40;
     public final ItemStack[] content = new ItemStack[24];
+    public static final int[] topSides = {
+            0, 1, 2, 3, 4, 5, 6, 7, 8,
+            9, 10, 11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20, 21, 22,
+            23 };
     public String customName;
     public int numPlayersUsing = 0;
     public final int[] stackProducing = new int[16];
@@ -92,8 +99,8 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     @Override
     public void readFromNBT(NBTTagCompound comp) {
-        super.readFromNBT(comp);
-
+        this.storage.setCapacity(CAPACITY);
+        this.storage.setMaxExtract(OUTPUT);
         if (comp.hasKey("CustomName", Constants.NBT.TAG_STRING)) this.customName = comp.getString("CustomName");
 
         NBTTagList nbtlist = comp.getTagList("Inventory", Constants.NBT.TAG_COMPOUND);
@@ -104,8 +111,9 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         }
 
         for (byte i = 20; i < 24; i++) {
-            if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).updateUpgrade(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i));
+            if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).onReadFromNBT(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i), comp);
         }
+        super.readFromNBT(comp);
     }
 
     @Override
@@ -124,6 +132,10 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
             }
         }
         comp.setTag("Inventory", nbtlist);
+
+        for (byte i = 20; i < 24; i++) {
+            if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).onWriteToNBT(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i), comp);
+        }
     }
 
     @Override
@@ -176,6 +188,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     public void setInventorySlotContents(int index, ItemStack stack) {
         this.content[index] = stack;
         this.markDirty();
+        this.updateUpgrades();
     }
 
     @Override
@@ -220,7 +233,31 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return true;
+        if (index >= 4 && index < 20 && stack.getItem() instanceof ISolarCell) {
+            return this.getStackInSlot((int) ((index - index % 4F) / 4F) - 1) != null;
+        }
+        return (index < 4 && stack.getItem() instanceof SolarCellSupport) || (index >= 20 && index < 24 && stack.getItem() instanceof ISolarUpgrade);
+    }
+
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side) {
+        return side == 1 ? null : topSides;
+    }
+
+    @Override
+    public boolean canInsertItem(int slot, ItemStack stack, int side) {
+        return this.isItemValidForSlot(slot, stack);
+    }
+
+    @Override
+    public boolean canExtractItem(int slot, ItemStack stack, int side) {
+        if (slot < 4) {
+            for (byte i = 0; i < 4; i++) {
+                if (this.getStackInSlot(slot * 4 + i + 4) != null) return false;
+            }
+            return true;
+        } else if (slot >= 4 && slot < 24) { return true; }
+        return false;
     }
 
     @Override
@@ -232,7 +269,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         return super.receiveClientEvent(id, value);
     }
 
-    public EnergyStorage getEnergyStorage() {
+    public CSPEnergyStorage getEnergyStorage() {
         return this.storage;
     }
 
@@ -240,8 +277,9 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         this.storage.setCapacity(CAPACITY);
         this.storage.setMaxExtract(OUTPUT);
         for (byte i = 20; i < 24; i++) {
-            if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).updateUpgrade(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i));
+            if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).load(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i));
         }
+        this.storage.update();
     }
 
     public int getAmountProducedBy(int index) {
@@ -263,7 +301,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         int[] prodArray = accessor.getNBTData().getIntArray("Production");
         if (prodArray != null && prodArray.length > 0) {
             boolean detailed = accessor.getPlayer().isSneaking();
-            if (!detailed) currenttip.add(EnumChatFormatting.WHITE + "" + EnumChatFormatting.ITALIC + "<Hold shift>");
+            if (!detailed) currenttip.add(EnumChatFormatting.WHITE + "" + EnumChatFormatting.ITALIC + StatCollector.translateToLocal("misc." + CSP.MODID + "_hold_shift"));
             for (byte i = 0; i < 4; i++) {
                 if (prodArray[i * 4] > 0 || prodArray[i * 4 + 1] > 0 || prodArray[i * 4 + 2] > 0 || prodArray[i * 4 + 3] > 0) {
                     for (byte j = 0; j < 4; j++) {
@@ -273,7 +311,50 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
                 }
             }
         }
-        currenttip.add(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted("tile.csp_SolarPanelFrame.currentlyProducing", accessor.getNBTData().getInteger("TotalProduction") / accessor.getNBTData().getInteger("TimeSinceLastProduction")));
+        if (accessor.getNBTData().getInteger("TimeSinceLastProduction") != 0) currenttip.add(EnumChatFormatting.GREEN + StatCollector.translateToLocalFormatted("tile.csp_SolarPanelFrame.currentlyProducing", accessor.getNBTData().getInteger("TotalProduction") / accessor.getNBTData().getInteger("TimeSinceLastProduction")));
         return currenttip;
+    }
+
+    public int canInputItem(EntityPlayer player, ItemStack stack) {
+        if (stack.getItem() instanceof SolarCellSupport) {
+            for (byte i = 0; i < 4; i++) {
+                if (this.getStackInSlot(i) == null) {
+                    this.setInventorySlotContents(i, stack);
+                    return stack.stackSize;
+                }
+            }
+            return 0;
+        } else if (stack.getItem() instanceof ISolarCell) {
+            for (byte i = 0; i < 4; i++) {
+                for (byte j = 0; j < 4; j++) {
+                    if (this.getStackInSlot(i * 4 + j + 4) == null && this.getStackInSlot(i) != null) {
+                        this.setInventorySlotContents(i * 4 + j + 4, stack);
+                        return stack.stackSize;
+                    }
+                }
+            }
+            return 0;
+        } else if (stack.getItem() instanceof ISolarUpgrade) {
+            for (byte i = 20; i < 24; i++) {
+                ItemStack invStack = this.getStackInSlot(i);
+                if (invStack == null) {
+                    this.setInventorySlotContents(i, stack);
+                    return stack.stackSize;
+                } else if (invStack.getItem() == stack.getItem() && (!stack.getHasSubtypes() || invStack.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(invStack, stack)) {
+                    int l = invStack.stackSize + stack.stackSize;
+
+                    if (l <= stack.getMaxStackSize()) {
+                        invStack.stackSize = l;
+                        return stack.stackSize;
+                    } else if (invStack.stackSize < stack.getMaxStackSize()) {
+                        stack.stackSize -= stack.getMaxStackSize() - invStack.stackSize;
+                        invStack.stackSize = stack.getMaxStackSize();
+                        return stack.getMaxStackSize() - stack.stackSize;
+                    }
+                }
+            }
+            return 0;
+        }
+        return 0;
     }
 }
