@@ -56,22 +56,25 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     @Override
     public void updateEntity() {
-        if (!this.worldObj.isRemote && this.canGenerate()) {
+        if (!this.worldObj.isRemote) {
+            boolean solarUpgradeGenerate = this.canGenerate();
             this.timeLastProd = (int) (this.worldObj.getTotalWorldTime() - this.lastWorldTime);
             this.lastWorldTime = this.worldObj.getTotalWorldTime();
-            int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord + 1, this.zCoord) - this.worldObj.skylightSubtracted;
+            int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord, this.zCoord) - this.worldObj.skylightSubtracted;
             float f = this.worldObj.getCelestialAngleRadians(1.0F);
 
             float ratio = Math.max(0, Math.round((float) i1 * MathHelper.cos(f)));
             int total = 0;
             for (byte i = 4; i < 20; i++) {
-                int energy = 0;
-                if (this.getStackInSlot(i) != null && this.getStackInSlot(i).getItem() instanceof ISolarCell) energy = ((ISolarCell) this.getStackInSlot(i).getItem()).amountToGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), f, i1, ratio);
-                for (byte j = 20; j < 24; j++) {
-                    if (this.getStackInSlot(j) != null) energy = ((ISolarUpgrade) this.getStackInSlot(j).getItem()).generateWithCell(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(j), this.getStackInSlot(i), f, i1, ratio, energy);
+                if (this.getStackInSlot(i) != null && ((ISolarCell) this.getStackInSlot(i).getItem()).canGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), solarUpgradeGenerate, this.worldObj.getTotalWorldTime(), this.worldObj.provider.hasNoSky, this.worldObj.canBlockSeeTheSky(this.xCoord, this.yCoord, this.zCoord))) {
+                    int energy = 0;
+                    if (this.getStackInSlot(i).getItem() instanceof ISolarCell) energy = ((ISolarCell) this.getStackInSlot(i).getItem()).amountToGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), f, i1, ratio);
+                    for (byte j = 20; j < 24; j++) {
+                        if (this.getStackInSlot(j) != null) energy = ((ISolarUpgrade) this.getStackInSlot(j).getItem()).generateWithCell(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(j), this.getStackInSlot(i), f, i1, ratio, energy);
+                    }
+                    if (this.worldObj.getTotalWorldTime() % 20 == 0) this.stackProducing[i - 4] = energy;
+                    total += energy;
                 }
-                if (this.worldObj.getTotalWorldTime() % 20 == 0) this.stackProducing[i - 4] = energy;
-                total += energy;
             }
             for (int i = 20; i < 24; i++) {
                 if (this.getStackInSlot(i) != null) total = ((ISolarUpgrade) this.getStackInSlot(i).getItem()).generate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), total);
@@ -136,6 +139,26 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         for (byte i = 20; i < 24; i++) {
             if (this.getStackInSlot(i) != null) ((ISolarUpgrade) this.getStackInSlot(i).getItem()).onWriteToNBT(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this, this.getStackInSlot(i), comp);
         }
+    }
+
+    @Override
+    public void writeExtraCompound(NBTTagCompound comp) {
+        super.writeExtraCompound(comp);
+        if (this.hasCustomInventoryName()) {
+            if (comp.hasKey("display", Constants.NBT.TAG_COMPOUND)) {
+                comp.getCompoundTag("display").setString("Name", this.customName);
+            } else {
+                NBTTagCompound comp1 = new NBTTagCompound();
+                comp1.setString("Name", this.customName);
+                comp.setTag("display", comp1);
+            }
+        }
+    }
+
+    @Override
+    public void readExtraCompound(NBTTagCompound comp) {
+        super.readExtraCompound(comp);
+        if (comp.hasKey("display", Constants.NBT.TAG_COMPOUND) && comp.getCompoundTag("display").hasKey("Name", Constants.NBT.TAG_STRING)) this.customName = comp.getCompoundTag("display").getString("Name");
     }
 
     @Override
@@ -233,9 +256,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        if (index >= 4 && index < 20 && stack.getItem() instanceof ISolarCell) {
-            return this.getStackInSlot((int) ((index - index % 4F) / 4F) - 1) != null;
-        }
+        if (index >= 4 && index < 20 && stack.getItem() instanceof ISolarCell) { return this.getStackInSlot((int) ((index - index % 4F) / 4F) - 1) != null; }
         return (index < 4 && stack.getItem() instanceof SolarCellSupport) || (index >= 20 && index < 24 && stack.getItem() instanceof ISolarUpgrade);
     }
 

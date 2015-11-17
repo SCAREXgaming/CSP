@@ -2,7 +2,6 @@ package fr.scarex.csp.block;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.CSP;
-import fr.scarex.csp.item.SolarCellSupport;
 import fr.scarex.csp.tileentity.TileEntitySolarPanel;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;

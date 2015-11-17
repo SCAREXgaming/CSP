@@ -13,15 +13,16 @@ public class CSPBlocks
     public static void preInit() {
         addBlock(new SolarPanelFrame());
         addBlock(new SolarBlock());
+        addBlock(new SolarCellConverter());
 
         for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
-            e.getValue().register();
+            e.getValue().init();
         }
     }
 
     public static void init() {
         for (Entry<Class, AbstractBlock> e : blockMap.entrySet()) {
-            e.getValue().init();
+            e.getValue().register();
         }
     }
 

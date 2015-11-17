@@ -1,6 +1,5 @@
 package fr.scarex.csp.tileentity;
 
-import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyHandler;
 import fr.scarex.csp.util.BlockCoord;
 import fr.scarex.csp.util.energy.CSPEnergyStorage;
@@ -64,12 +63,12 @@ public class AbstractTileEntityEnergy extends AbstractCSPTileEntity implements I
         this.storage.writeToNBT(comp);
     }
 
-    public NBTTagCompound writeExtraCompound() {
-        NBTTagCompound comp = new NBTTagCompound();
+    @Override
+    public void writeExtraCompound(NBTTagCompound comp) {
         this.storage.writeToNBT(comp);
-        return comp;
     }
 
+    @Override
     public void readExtraCompound(NBTTagCompound comp) {
         this.storage.readFromNBT(comp);
     }

@@ -11,17 +11,21 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
-public class SolarCell extends AbstractItem implements ISolarCell
+public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvertable
 {
     public static final String[] LEVELS = new String[] {
             "Basic", "Hardened",
             "Reinforced", "Resonant" };
-    public static final IIcon[] icons = new IIcon[LEVELS.length];
-    public static final IIcon[] worldIcons = new IIcon[LEVELS.length];
+    public static final int[] LEVELS_CONVERSION = new int[] {
+            2000, 4000, 8000, 10000 };
+    public static final IIcon[] ICONS = new IIcon[LEVELS.length];
+    public static final IIcon[] WORLD_ICONS = new IIcon[LEVELS.length];
 
     @Override
     public void init() {
@@ -48,7 +52,7 @@ public class SolarCell extends AbstractItem implements ISolarCell
 
     @Override
     public void getSubItems(Item item, CreativeTabs tab, List list) {
-        for (int i = 0; i < icons.length; i++) {
+        for (int i = 0; i < ICONS.length; i++) {
             list.add(new ItemStack(item, 1, i));
         }
     }
@@ -70,15 +74,15 @@ public class SolarCell extends AbstractItem implements ISolarCell
 
     @Override
     public void registerIcons(IIconRegister r) {
-        for (int i = 0; i < icons.length; i++) {
-            icons[i] = r.registerIcon(CSP.MODID + ":" + this.getName() + LEVELS[i]);
-            worldIcons[i] = r.registerIcon(CSP.MODID + ":" + this.getName() + LEVELS[i] + "_world");
+        for (int i = 0; i < ICONS.length; i++) {
+            ICONS[i] = r.registerIcon(CSP.MODID + ":" + this.getName() + LEVELS[i]);
+            WORLD_ICONS[i] = r.registerIcon(CSP.MODID + ":" + this.getName() + LEVELS[i] + "_world");
         }
     }
 
     @Override
     public IIcon getIconFromDamage(int meta) {
-        return icons[meta & 3];
+        return ICONS[meta & 3];
     }
 
     @Override
@@ -97,8 +101,13 @@ public class SolarCell extends AbstractItem implements ISolarCell
     }
 
     @Override
+    public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky) {
+        return baseGenerate;
+    }
+
+    @Override
     public IIcon getIconForWorldRendering(World world, int x, int y, int z, ItemStack stack, int slot) {
-        return worldIcons[stack.getItemDamage()];
+        return WORLD_ICONS[stack.getItemDamage()];
     }
 
     @Override
@@ -118,5 +127,44 @@ public class SolarCell extends AbstractItem implements ISolarCell
             list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellResonantProduction));
             break;
         }
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("SolarConversionState", Constants.NBT.TAG_INT)) list.add("Solar Conversion State : " + stack.getTagCompound().getInteger("SolarConversionState"));
+    }
+
+    @Override
+    public int getMaxStackSize(World world, int x, int y, int z, ItemStack stack) {
+        return 1;
+    }
+
+    @Override
+    public boolean canAddItem(World world, int x, int y, int z, ItemStack stack, ItemStack newStack) {
+        return false;
+    }
+
+    @Override
+    public boolean canExtractItem(World world, int x, int y, int z, ItemStack stack, boolean isPlayer) {
+        return isPlayer || (stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") >= LEVELS_CONVERSION[stack.getItemDamage()]);
+    }
+
+    @Override
+    public boolean isConversionFinished(World world, int x, int y, int z, ItemStack stack) {
+        return stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") >= LEVELS_CONVERSION[stack.getItemDamage()];
+    }
+
+    @Override
+    public void update(World world, int x, int y, int z, ItemStack stack) {
+        if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+        int i = stack.getTagCompound().hasKey("SolarConversionState", Constants.NBT.TAG_INT) ? stack.getTagCompound().getInteger("SolarConversionState") : 0;
+        if (i < LEVELS_CONVERSION[stack.getItemDamage()]) stack.getTagCompound().setInteger("SolarConversionState", ++i);
+        if (world.getTotalWorldTime() % 20 == 0) CSP.LOGGER.info("progression : " + i);
+    }
+
+    @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return stack.hasTagCompound() && stack.getTagCompound().hasKey("SolarConversionState", Constants.NBT.TAG_INT) && stack.getTagCompound().getInteger("SolarConversionState") > 0;
+    }
+
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack) {
+        return 1D - ((double) stack.getTagCompound().getInteger("SolarConversionState") / LEVELS_CONVERSION[stack.getItemDamage()]);
     }
 }

@@ -10,9 +10,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.IRegister;
 import fr.scarex.csp.client.ClientProxy;
+import fr.scarex.csp.tileentity.AbstractCSPTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public abstract class AbstractBlock extends Block implements IRegister
 {
@@ -70,9 +74,23 @@ public abstract class AbstractBlock extends Block implements IRegister
     @Override
     public void registerCrafts() {}
 
+    @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
+        if (stack.getTagCompound() != null && world.getTileEntity(x, y, z) instanceof AbstractCSPTileEntity) ((AbstractCSPTileEntity) world.getTileEntity(x, y, z)).readExtraCompound(stack.getTagCompound());
+    }
+
     public List<ItemStack> getAllItemStacks() {
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         stacks.add(new ItemStack(this));
         return stacks;
+    }
+
+    @Override
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+        TileEntity ent = world.getTileEntity(x, y, z);
+        if (ent instanceof AbstractCSPTileEntity) {
+            AbstractCSPTileEntity te = (AbstractCSPTileEntity) ent;
+            te.onNeighborBlockChange(block);
+        }
     }
 }
