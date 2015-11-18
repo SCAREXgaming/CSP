@@ -8,7 +8,7 @@ public interface ISolarCell
 {
     public int amountToGenerate(World world, int x, int y, int z, ItemStack stack, float sunPosInRadians, int sunLight, float ratio);
 
-    public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky);
+    public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky, int speedUpgradesAmount);
 
     public IIcon getIconForWorldRendering(World world, int x, int y, int z, ItemStack stack, int slot);
 }

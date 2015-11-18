@@ -1,10 +1,13 @@
 package fr.scarex.csp.block;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import fr.scarex.csp.tileentity.TileEntitySolarCellConverter;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class SolarCellConverter extends AbstractBlockDismantleable
 {
@@ -22,6 +25,11 @@ public class SolarCellConverter extends AbstractBlockDismantleable
     @Override
     public Class getTileEntityClass() {
         return TileEntitySolarCellConverter.class;
+    }
+
+    @Override
+    public void registerCrafts() {
+        GameRegistry.addRecipe(new ShapedOreRecipe(this, "XXX", " Y ", "ZWZ", 'X', "ingotSolarium", 'Y', Items.nether_star, 'Z', "ingotIron", 'W', "blockSolarium"));
     }
 
     @Override

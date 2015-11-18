@@ -2,15 +2,15 @@ package fr.scarex.csp.item;
 
 import net.minecraftforge.oredict.OreDictionary;
 
-public class SolarNugget extends AbstractItem
+public class SolariumNugget extends AbstractItem
 {
     @Override
     public String getName() {
-        return "SolarNugget";
+        return "SolariumNugget";
     }
 
     @Override
     public void registerCrafts() {
-        OreDictionary.registerOre("nuggetSolar", this);
+        OreDictionary.registerOre("nuggetSolarium", this);
     }
 }

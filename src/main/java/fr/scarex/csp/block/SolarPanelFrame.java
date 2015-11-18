@@ -27,7 +27,7 @@ public class SolarPanelFrame extends AbstractEnergyBlock
 
     @Override
     public void registerCrafts() {
-        GameRegistry.addRecipe(new ShapedOreRecipe(this, "XXX", " Y ", "YYY", 'X', "ingotSolar", 'Y', "ingotIron"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(this, "XXX", " Y ", "YYY", 'X', "ingotSolarium", 'Y', "ingotIron"));
     }
 
     @Override

@@ -49,9 +49,9 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
 
     @Override
     public void registerCrafts() {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 0), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "dustPyrotheum"));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 1), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "ingotGold"));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 2), "AXA", "XZX", "YXY", 'A', "ingotEnderium", 'X', Blocks.iron_bars, 'Z', "ingotSolar", 'Y', "gemEmerald"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 0), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolarium", 'Y', "dustPyrotheum"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 1), "YXY", "XZX", "YXY", 'X', Blocks.iron_bars, 'Z', "ingotSolarium", 'Y', "ingotGold"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 1, 2), "AXA", "XZX", "YXY", 'A', "ingotEnderium", 'X', Blocks.iron_bars, 'Z', "ingotSolarium", 'Y', "gemEmerald"));
     }
 
     @Override
@@ -111,19 +111,23 @@ public class SolarUpgrade extends AbstractItem implements ISolarUpgrade
         }
     }
 
-    @Override
-    public boolean canGenerate(World world, int x, int y, int z, ItemStack upgrade) {
-        return true;
-    }
-
-    @Override
-    public boolean canBaseGenerate(World world, int x, int y, int z, ItemStack upgrade, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky) {
-        switch (upgrade.getItemDamage()) {
-        case 0:
-            return canSeeTheSky && !hasNoSky && (upgrade.stackSize >= 2 ? true : world.getTotalWorldTime() % 2 == 0);
-        }
-        return baseGenerate;
-    }
+    // @Override
+    // public boolean canGenerate(World world, int x, int y, int z, ItemStack
+    // upgrade) {
+    // return true;
+    // }
+    //
+    // @Override
+    // public boolean canBaseGenerate(World world, int x, int y, int z,
+    // ItemStack upgrade, boolean baseGenerate, long totalWorldTime, boolean
+    // hasNoSky, boolean canSeeTheSky) {
+    // switch (upgrade.getItemDamage()) {
+    // case 0:
+    // return canSeeTheSky && !hasNoSky && (upgrade.stackSize >= 2 ? true :
+    // world.getTotalWorldTime() % 2 == 0);
+    // }
+    // return baseGenerate;
+    // }
 
     @Override
     public int generateWithCell(World world, int x, int y, int z, ItemStack upgrade, ItemStack stack, float sunPosInRadians, int sunLight, float ratio, int generated) {

@@ -1,7 +1,8 @@
 # Blocks
 tile.csp_SolarPanelFrame.name=Solar Panel Frame
 tile.csp_SolarPanelFrame.currentlyProducing=Currently producing : %d RF/t
-tile.csp_SolarBlock.name=Solar Block
+tile.csp_SolariumBlock.name=Solarium Block
+tile.csp_SolarCellConverter.name=Solar Cell Converter
 
 # Items
 item.csp_SolarCellBasic.name=Solar Cell (Basic)
@@ -23,8 +24,8 @@ item.csp_SolarUpgradeProduction.info=This item augments the production up to 200
 item.csp_SolarUpgradeProduction.desactivated=Production augmentation has been desactivated from the config file
 
 item.csp_SolarCellSupport.name=Solar Cell Support
-item.csp_SolarIngot.name=Solar Ingot
-item.csp_SolarNugget.name=Solar Nugget
+item.csp_SolariumIngot.name=Solarium Ingot
+item.csp_SolariumNugget.name=Solarium Nugget
 
 # Creative tabs
 itemGroup.csp=Custom Solar Panels

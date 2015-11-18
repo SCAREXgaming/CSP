@@ -3,9 +3,11 @@ package fr.scarex.csp.tileentity;
 import java.util.List;
 
 import fr.scarex.csp.CSP;
+import fr.scarex.csp.item.CSPItems;
 import fr.scarex.csp.item.ISolarCell;
 import fr.scarex.csp.item.ISolarUpgrade;
 import fr.scarex.csp.item.SolarCellSupport;
+import fr.scarex.csp.item.SolarUpgrade;
 import fr.scarex.csp.util.energy.CSPEnergyStorage;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -13,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -57,7 +60,11 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     @Override
     public void updateEntity() {
         if (!this.worldObj.isRemote) {
-            boolean solarUpgradeGenerate = this.canGenerate();
+            long time = this.worldObj.getTotalWorldTime();
+            boolean noSky = this.worldObj.provider.hasNoSky;
+            boolean canSeeTheSky = this.worldObj.canBlockSeeTheSky(this.xCoord, this.yCoord, this.zCoord);
+            int amount = this.getAmountOfUpgrade(CSPItems.itemMap.get(SolarUpgrade.class), 0);
+            boolean baseGenerate = (amount >= 2 ? true : (amount == 1 ? time % 2 == 0 : time % 20 == 0)) && !noSky && canSeeTheSky;
             this.timeLastProd = (int) (this.worldObj.getTotalWorldTime() - this.lastWorldTime);
             this.lastWorldTime = this.worldObj.getTotalWorldTime();
             int i1 = this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, this.xCoord, this.yCoord, this.zCoord) - this.worldObj.skylightSubtracted;
@@ -66,7 +73,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
             float ratio = Math.max(0, Math.round((float) i1 * MathHelper.cos(f)));
             int total = 0;
             for (byte i = 4; i < 20; i++) {
-                if (this.getStackInSlot(i) != null && ((ISolarCell) this.getStackInSlot(i).getItem()).canGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), solarUpgradeGenerate, this.worldObj.getTotalWorldTime(), this.worldObj.provider.hasNoSky, this.worldObj.canBlockSeeTheSky(this.xCoord, this.yCoord, this.zCoord))) {
+                if (this.getStackInSlot(i) != null && ((ISolarCell) this.getStackInSlot(i).getItem()).canGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), baseGenerate, time, noSky, canSeeTheSky, amount)) {
                     int energy = 0;
                     if (this.getStackInSlot(i).getItem() instanceof ISolarCell) energy = ((ISolarCell) this.getStackInSlot(i).getItem()).amountToGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), f, i1, ratio);
                     for (byte j = 20; j < 24; j++) {
@@ -85,19 +92,12 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
         }
     }
 
-    public boolean canGenerate() {
-        long time = this.worldObj.getTotalWorldTime();
-        boolean noSky = this.worldObj.provider.hasNoSky;
-        boolean canSeeTheSky = this.worldObj.canBlockSeeTheSky(this.xCoord, this.yCoord, this.zCoord);
-        boolean baseGenerate = time % 20 == 0 && !noSky && canSeeTheSky;
-        boolean generate = true;
-        for (byte i = 20; i < 24 && generate; i++) {
-            if (this.getStackInSlot(i) != null) {
-                baseGenerate = ((ISolarUpgrade) this.getStackInSlot(i).getItem()).canBaseGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), baseGenerate, time, noSky, canSeeTheSky);
-                if (!((ISolarUpgrade) this.getStackInSlot(i).getItem()).canGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i))) generate = false;
-            }
+    public int getAmountOfUpgrade(Item item, int metadata) {
+        int amount = 0;
+        for (byte i = 20; i < 24; i++) {
+            if (this.getStackInSlot(i) != null && this.getStackInSlot(i).getItem() == item && this.getStackInSlot(i).getItemDamage() == metadata) amount += this.getStackInSlot(i).stackSize;
         }
-        return generate && baseGenerate;
+        return amount;
     }
 
     @Override
@@ -211,6 +211,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
     public void setInventorySlotContents(int index, ItemStack stack) {
         this.content[index] = stack;
         this.markDirty();
+        if (this.worldObj != null) this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         this.updateUpgrades();
     }
 

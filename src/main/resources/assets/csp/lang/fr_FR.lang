@@ -1,7 +1,8 @@
 # Blocks
 tile.csp_SolarPanelFrame.name=Cadre de Panneau Solaire
 tile.csp_SolarPanelFrame.currentlyProducing=En train de produire : %d RF/t
-tile.csp_SolarBlock.name=Block Solaire
+tile.csp_SolariumBlock.name=Block de Solarium
+tile.csp_SolarCellConverter.name=Convertisseur de Cellules Photovoltaïques
 
 # Items
 item.csp_SolarCellBasic.name=Cellule Photovoltaïque (Basic)
@@ -23,8 +24,8 @@ item.csp_SolarUpgradeProduction.info=Cette item augmente jusqu'à 200%% la produ
 item.csp_SolarUpgradeProduction.desactivated=L'augmentation de la production a été désactivée dans le fichier de configuration
 
 item.csp_SolarCellSupport.name=Support de Cellule Photovoltaïque
-item.csp_SolarIngot.name=Lingot Solaire
-item.csp_SolarNugget.name=Pépite Solaire
+item.csp_SolariumIngot.name=Lingot de Solarium
+item.csp_SolariumNugget.name=Pépite de Solarium
 
 # Creative tabs
 itemGroup.csp=Custom Solar Panels

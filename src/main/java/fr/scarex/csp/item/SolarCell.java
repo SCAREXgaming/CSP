@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -23,7 +24,7 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
             "Basic", "Hardened",
             "Reinforced", "Resonant" };
     public static final int[] LEVELS_CONVERSION = new int[] {
-            2000, 4000, 8000, 10000 };
+            2000, 3000, 6000, 12000 };
     public static final IIcon[] ICONS = new IIcon[LEVELS.length];
     public static final IIcon[] WORLD_ICONS = new IIcon[LEVELS.length];
 
@@ -54,6 +55,11 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
     public void getSubItems(Item item, CreativeTabs tab, List list) {
         for (int i = 0; i < ICONS.length; i++) {
             list.add(new ItemStack(item, 1, i));
+            NBTTagCompound comp = new NBTTagCompound();
+            comp.setInteger("SolarConversionState", LEVELS_CONVERSION[i]);
+            ItemStack stack = new ItemStack(item, 1, i);
+            stack.setTagCompound(comp);
+            list.add(stack);
         }
     }
 
@@ -87,6 +93,10 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
 
     @Override
     public int amountToGenerate(World world, int x, int y, int z, ItemStack stack, float sunPosInRadians, int sunLight, float ratio) {
+        if (ratio == 0 && stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0) {
+            ratio = Math.abs(Math.round((float) 15 * MathHelper.cos(sunPosInRadians))) * 0.8F;
+            if (world.getTotalWorldTime() % 2 == 0) stack.getTagCompound().setInteger("SolarConversionState", stack.getTagCompound().getInteger("SolarConversionState") - 1);
+        }
         switch (stack.getItemDamage()) {
         case 0:
             return CSPConfiguration.solarCellBasicProduction > 0 ? Math.round((float) ratio / (15.0F / CSPConfiguration.solarCellBasicProduction)) : 0;
@@ -101,7 +111,7 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
     }
 
     @Override
-    public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky) {
+    public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky, int speedUpgradesAmount) {
         return baseGenerate;
     }
 
@@ -127,7 +137,7 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
             list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellResonantProduction));
             break;
         }
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("SolarConversionState", Constants.NBT.TAG_INT)) list.add("Solar Conversion State : " + stack.getTagCompound().getInteger("SolarConversionState"));
+        if (stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0) list.add("Solar Conversion State : " + (stack.getTagCompound().getInteger("SolarConversionState") * 100 / LEVELS_CONVERSION[stack.getItemDamage()]) + "%");
     }
 
     @Override
@@ -155,7 +165,6 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
         if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
         int i = stack.getTagCompound().hasKey("SolarConversionState", Constants.NBT.TAG_INT) ? stack.getTagCompound().getInteger("SolarConversionState") : 0;
         if (i < LEVELS_CONVERSION[stack.getItemDamage()]) stack.getTagCompound().setInteger("SolarConversionState", ++i);
-        if (world.getTotalWorldTime() % 20 == 0) CSP.LOGGER.info("progression : " + i);
     }
 
     @Override
