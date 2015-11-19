@@ -137,7 +137,7 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
             list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".maxProduction", CSPConfiguration.solarCellResonantProduction));
             break;
         }
-        if (stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0) list.add("Solar Conversion State : " + (stack.getTagCompound().getInteger("SolarConversionState") * 100 / LEVELS_CONVERSION[stack.getItemDamage()]) + "%");
+        if (stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0) list.add(StatCollector.translateToLocalFormatted(this.getUnlocalizedName() + ".solarConversionState", (stack.getTagCompound().getInteger("SolarConversionState") * 100 / LEVELS_CONVERSION[stack.getItemDamage()])));
     }
 
     @Override

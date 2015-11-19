@@ -11,6 +11,7 @@ item.csp_SolarCellReinforced.name=Cellule Photovoltaïque (Reinforced)
 item.csp_SolarCellResonant.name=Cellule Photovoltaïque (Resonant)
 item.csp_SolarCellFrame.name=Cadre de Cellule Photovoltaïque
 item.csp_SolarCell.maxProduction=Production Maximale : %s RF/t
+item.csp_SolarCell.solarConversionState=État de Conversion Solaire : %s%%
 
 item.csp_SolarUpgradeSpeed.name=Mise à Niveau de Vitesse
 item.csp_SolarUpgradeSpeed.info=2 Mises à niveau de vitesse donne la production entière
