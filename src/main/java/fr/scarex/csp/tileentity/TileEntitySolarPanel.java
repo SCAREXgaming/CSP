@@ -73,6 +73,7 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
             float ratio = Math.max(0, Math.round((float) i1 * MathHelper.cos(f)));
             int total = 0;
             for (byte i = 4; i < 20; i++) {
+                if (this.getStackInSlot(i) == null && this.worldObj.getTotalWorldTime() % 20 == 0) this.stackProducing[i - 4] = 0;
                 if (this.getStackInSlot(i) != null && ((ISolarCell) this.getStackInSlot(i).getItem()).canGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), baseGenerate, time, noSky, canSeeTheSky, amount)) {
                     int energy = 0;
                     if (this.getStackInSlot(i).getItem() instanceof ISolarCell) energy = ((ISolarCell) this.getStackInSlot(i).getItem()).amountToGenerate(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.getStackInSlot(i), f, i1, ratio);

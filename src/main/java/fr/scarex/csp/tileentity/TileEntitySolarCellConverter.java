@@ -1,5 +1,6 @@
 package fr.scarex.csp.tileentity;
 
+import fr.scarex.csp.CSPConfiguration;
 import fr.scarex.csp.item.ISolarConvertable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -19,7 +20,7 @@ public class TileEntitySolarCellConverter extends AbstractCSPTileEntity implemen
 
     @Override
     public void updateEntity() {
-        if (!this.worldObj.isRemote && this.canConvert() && this.convertable != null) {
+        if (!this.worldObj.isRemote && CSPConfiguration.allowSolarConversion && this.canConvert() && this.convertable != null) {
             ((ISolarConvertable) this.convertable.getItem()).update(this.getWorldObj(), this.xCoord, this.yCoord, this.zCoord, this.convertable);
             this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         }

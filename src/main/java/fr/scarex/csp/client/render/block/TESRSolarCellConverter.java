@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
 
+import fr.scarex.csp.CSPConfiguration;
 import fr.scarex.csp.item.ISolarConvertable;
 import fr.scarex.csp.tileentity.TileEntitySolarCellConverter;
 import net.minecraft.block.Block;
@@ -37,7 +38,7 @@ public class TESRSolarCellConverter extends AbstractTESR
         if (tile != null && tile.getStackInSlot(0) != null) {
             GL11.glPushMatrix();
             GL11.glTranslated(x + 0.5, y + 0.2, z + 0.5);
-            if (tile.canConvert() && !((ISolarConvertable) tile.getStackInSlot(0).getItem()).isConversionFinished(tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, tile.getStackInSlot(0))) GL11.glRotatef(tile.getWorldObj().getTotalWorldTime() % 360 * 3, 0F, 1F, 0F);
+            if (CSPConfiguration.allowSolarConversion && tile.canConvert() && !((ISolarConvertable) tile.getStackInSlot(0).getItem()).isConversionFinished(tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, tile.getStackInSlot(0))) GL11.glRotatef(tile.getWorldObj().getTotalWorldTime() % 360 * 3, 0F, 1F, 0F);
             GL11.glTranslatef(-0.15F, 0.0F, 0.0F);
             GL11.glScalef(0.3F, 0.3F, 0.3F);
             this.bindTexture(TextureMap.locationItemsTexture);

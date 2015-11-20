@@ -24,6 +24,7 @@ public class CSPConfiguration implements IModGuiFactory
     public static int powerUpgradeOutputRatio = 64;
     public static boolean useSolarPanelFrameCoolRender = true;
     public static int solarPanelFrameRenderDistance = 16;
+    public static boolean allowSolarConversion = true;
 
     @Override
     public void initialize(Minecraft minecraftInstance) {
@@ -55,6 +56,7 @@ public class CSPConfiguration implements IModGuiFactory
         powerUpgradeOutputRatio = CONFIG.getInt("powerUpgradeOutputRatio", Configuration.CATEGORY_GENERAL, 64, 0, 400, "Energy output ratio for the power upgrade");
         useSolarPanelFrameCoolRender = CONFIG.getBoolean("useSolarPanelFrameCoolRender", Configuration.CATEGORY_GENERAL, true, "Use cool rendering for the solar panels");
         solarPanelFrameRenderDistance = CONFIG.getInt("solarPanelFrameRenderDistance", Configuration.CATEGORY_GENERAL, 16, 0, 128, "Render distance for the items in the solar panel frame");
+        allowSolarConversion = CONFIG.getBoolean("allowSolarConversion", Configuration.CATEGORY_GENERAL, true, "Allow the solar conversion");
         if (CONFIG.hasChanged()) CONFIG.save();
     }
 
