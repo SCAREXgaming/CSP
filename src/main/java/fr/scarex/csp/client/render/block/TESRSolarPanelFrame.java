@@ -3,6 +3,7 @@ package fr.scarex.csp.client.render.block;
 import org.lwjgl.opengl.GL11;
 
 import cofh.api.item.IToolHammer;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import fr.scarex.csp.CSP;
 import fr.scarex.csp.CSPConfiguration;
 import fr.scarex.csp.item.ISolarCell;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -42,6 +44,8 @@ public class TESRSolarPanelFrame extends AbstractTESR
                 for (byte j = 0; j < 4; j++) {
                     ItemStack stack = tile.getStackInSlot(4 + i * 4 + j);
                     if (stack != null) {
+                        Tessellator tessellator = Tessellator.instance;
+                        ItemRenderer rend = RenderManager.instance.itemRenderer;
                         GL11.glPushMatrix();
                         float scale = 0.22F;
                         GL11.glTranslated(x + 0.06F + i * scale, y + 1D, z + 0.72F - (j * scale));
@@ -49,12 +53,42 @@ public class TESRSolarPanelFrame extends AbstractTESR
                         GL11.glScalef(scale, scale, 0.1F);
                         this.bindTexture(TextureMap.locationItemsTexture);
                         IIcon icon = ((ISolarCell) stack.getItem()).getIconForWorldRendering(tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, stack, 4 + i * 4 + j);
-                        float f9 = 0.0625F;
                         float minU = icon.getMinU();
                         float maxU = icon.getMaxU();
                         float minV = icon.getMinV();
                         float maxV = icon.getMaxV();
-                        ItemRenderer.renderItemIn2D(Tessellator.instance, maxU, minV, minU, maxV, icon.getIconWidth(), icon.getIconHeight(), f9);
+                        ItemRenderer.renderItemIn2D(tessellator, maxU, minV, minU, maxV, icon.getIconWidth(), icon.getIconHeight(), 0.0625F);
+
+                        if (((ISolarCell) stack.getItem()).hasSolarEffect(tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, stack, 4 + i * 4 + j)) {
+                            GL11.glDepthFunc(GL11.GL_EQUAL);
+                            GL11.glDisable(GL11.GL_LIGHTING);
+                            this.bindTexture((ResourceLocation) ObfuscationReflectionHelper.getPrivateValue(ItemRenderer.class, null, 0));
+                            GL11.glEnable(GL11.GL_BLEND);
+                            GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE);
+                            float f11 = ((ISolarCell) stack.getItem()).getColorForSolarEffect(tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, stack, 4 + i * 4 + j);
+                            GL11.glColor4f(1F * f11, 1F * f11, 1F * f11, 1.0F);
+                            GL11.glMatrixMode(GL11.GL_TEXTURE);
+                            GL11.glPushMatrix();
+                            float f12 = 0.125F;
+                            GL11.glScalef(f12, f12, f12);
+                            float f13 = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F * 8.0F;
+                            GL11.glTranslatef(f13, 0.0F, 0.0F);
+                            GL11.glRotatef(-50.0F, 0.0F, 0.0F, 1.0F);
+                            ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, 0.0625F);
+                            GL11.glPopMatrix();
+                            GL11.glPushMatrix();
+                            GL11.glScalef(f12, f12, f12);
+                            f13 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F * 8.0F;
+                            GL11.glTranslatef(-f13, 0.0F, 0.0F);
+                            GL11.glRotatef(10.0F, 0.0F, 0.0F, 1.0F);
+                            ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 255, 255, 0.0625F);
+                            GL11.glPopMatrix();
+                            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                            GL11.glDisable(GL11.GL_BLEND);
+                            GL11.glEnable(GL11.GL_LIGHTING);
+                            GL11.glDepthFunc(GL11.GL_LEQUAL);
+                        }
+
                         GL11.glPopMatrix();
                     }
                 }

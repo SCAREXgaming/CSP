@@ -90,6 +90,8 @@ public class TileEntitySolarPanel extends AbstractTileEntityEnergy implements II
             this.totalProd = total;
             this.storage.modifyEnergyStored(total);
             this.transmit();
+
+            if (this.worldObj.getTotalWorldTime() % 10 == 0) this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         }
     }
 

@@ -176,4 +176,19 @@ public class SolarCell extends AbstractItem implements ISolarCell, ISolarConvert
     public double getDurabilityForDisplay(ItemStack stack) {
         return 1D - ((double) stack.getTagCompound().getInteger("SolarConversionState") / LEVELS_CONVERSION[stack.getItemDamage()]);
     }
+
+    @Override
+    public boolean hasEffect(ItemStack stack, int pass) {
+        return stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0;
+    }
+
+    @Override
+    public boolean hasSolarEffect(World world, int x, int y, int z, ItemStack stack, int slot) {
+        return stack.hasTagCompound() && stack.getTagCompound().getInteger("SolarConversionState") > 0 && Math.max(0, Math.round((float) 15 * MathHelper.cos(world.getCelestialAngleRadians(1.0F)))) == 0;
+    }
+
+    @Override
+    public float getColorForSolarEffect(World world, int x, int y, int z, ItemStack stack, int slot) {
+        return 0.76F;
+    }
 }

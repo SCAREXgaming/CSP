@@ -11,4 +11,11 @@ public interface ISolarCell
     public boolean canGenerate(World world, int x, int y, int z, ItemStack stack, boolean baseGenerate, long totalWorldTime, boolean hasNoSky, boolean canSeeTheSky, int speedUpgradesAmount);
 
     public IIcon getIconForWorldRendering(World world, int x, int y, int z, ItemStack stack, int slot);
+    
+    public boolean hasSolarEffect(World world, int x, int y, int z, ItemStack stack, int slot);
+    
+    /**
+     * default : 0.76F
+     */
+    public float getColorForSolarEffect(World world, int x, int y, int z, ItemStack stack, int slot);
 }
