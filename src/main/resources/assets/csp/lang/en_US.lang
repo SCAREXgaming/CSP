@@ -17,12 +17,12 @@ item.csp_SolarUpgradeSpeed.name=Speed Upgrade
 item.csp_SolarUpgradeSpeed.info=2 Speed Upgrades provide the full production
 item.csp_SolarUpgradeSpeed.info1=1 Speed Upgrade provides half of the full production
 item.csp_SolarUpgradePower.name=Power Upgrade
-item.csp_SolarUpgradePower.info=This item augments the energy storage and the maximum energy output
-item.csp_SolarUpgradePower.storage.desactivated=Storage augmentation has been desactivated from the config file
-item.csp_SolarUpgradePower.output.desactivated=Output augmentation has been desactivated from the config file
+item.csp_SolarUpgradePower.info=This item increases the energy storage and the maximum energy output
+item.csp_SolarUpgradePower.storage.desactivated=Storage upgrades have been deactivated from the config file
+item.csp_SolarUpgradePower.output.desactivated=Output upgrades have been deactivated from the config file
 item.csp_SolarUpgradeProduction.name=Production Upgrade
-item.csp_SolarUpgradeProduction.info=This item augments the production up to 200%% with %s %s
-item.csp_SolarUpgradeProduction.desactivated=Production augmentation has been desactivated from the config file
+item.csp_SolarUpgradeProduction.info=This item increases the production up to 200%% with %s %s
+item.csp_SolarUpgradeProduction.desactivated=Production upgrades have been deactivated from the config file
 
 item.csp_SolarCellSupport.name=Solar Cell Support
 item.csp_SolariumIngot.name=Solarium Ingot
